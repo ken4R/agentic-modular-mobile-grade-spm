@@ -7,6 +7,8 @@
 | 2026-11-04 | CI | — | — | 0 | Job `ios` (`macos-15`) jamais attribué à un runner sur `main`, annulé après 15 à 19 min. Sur la branche à 18:57 UTC, un runner a bien été attribué : attente de file plutôt que quota. |
 | 2026-11-04 | S1 — étapes 3 à 5 : squelette Gradle, modules KMP, app Android | 180k / 500k | 4,45 $ (cumul session) | 0 | Build Android validé uniquement par la CI (vert du premier coup, 3 min 35). Tests KMP vérifiés en local via un projet JVM jetable (16/16), Maven Central renvoyant des 429 en rafale : 7 essais nécessaires. Catalogue du socle incomplet : artefacts Compose et `activity-compose` ajoutés localement, à reporter dans le template sous peine d'être écrasés par `sync-socle.sh`. |
 | 2026-11-04 | S1 — tests | — | — | 0 | `advanceUntilIdle()` n'exécute pas les coroutines de `backgroundScope` : les Stores testés reçoivent un scope sur `StandardTestDispatcher(testScheduler)`. |
+| 2026-11-04 | S1 — étape 6 : XCFramework, SKIE, SPM, app SwiftUI | 222k / 500k | 6,63 $ (cumul session) | 0 | SKIE 0.10.0 (socle) ne supporte pas Kotlin 2.2.0 : passage à 0.10.6, à reporter dans le template. Une app iOS ne se build pas avec SPM seul : `.xcodeproj` généré par XcodeGen (`ios/App/project.yml`). Framework statique : `libsqlite3` à lier côté SPM pour le driver SQLDelight natif (1 aller-retour CI). Validation iOS uniquement par la CI. |
+| 2026-11-04 | CI | — | — | 0 | Job `ios` à nouveau annulé après 15 min sans runner macOS, puis vert à la relance : attente de file macOS intermittente. |
 
 ## Versions stables relevées sur Maven Central le 2026-11-04
 
