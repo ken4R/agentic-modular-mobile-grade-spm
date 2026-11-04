@@ -1,6 +1,8 @@
 package com.poc.auth
 
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -10,7 +12,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class AuthStoreTest {
-    private fun TestScope.store() = AuthStore(LoginUseCase(FakeAuthRepository()), backgroundScope)
+    private fun TestScope.store() = AuthStore(LoginUseCase(FakeAuthRepository()), testStoreScope())
 
     @Test
     fun emailChangedUpdatesState() = runTest {
@@ -49,3 +51,6 @@ class AuthStoreTest {
         assertEquals(AuthUiState(), store.state.value)
     }
 }
+
+/** Scope du Store sur le scheduler de test, hors backgroundScope : advanceUntilIdle() exécute ses coroutines. */
+private fun TestScope.testStoreScope() = CoroutineScope(StandardTestDispatcher(testScheduler))

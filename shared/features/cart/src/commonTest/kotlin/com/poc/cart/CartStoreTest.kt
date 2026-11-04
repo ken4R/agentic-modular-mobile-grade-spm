@@ -1,13 +1,15 @@
 package com.poc.cart
 
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class CartStoreTest {
-    private fun TestScope.store() = CartStore(AddToCartUseCase(FakeCatalogApi()), backgroundScope)
+    private fun TestScope.store() = CartStore(AddToCartUseCase(FakeCatalogApi()), testStoreScope())
 
     @Test
     fun addUpdatesCountAndTotal() = runTest {
@@ -38,3 +40,6 @@ class CartStoreTest {
         assertEquals(CartUiState(), store.state.value)
     }
 }
+
+/** Scope du Store sur le scheduler de test, hors backgroundScope : advanceUntilIdle() exécute ses coroutines. */
+private fun TestScope.testStoreScope() = CoroutineScope(StandardTestDispatcher(testScheduler))
