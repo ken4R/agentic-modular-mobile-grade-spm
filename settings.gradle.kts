@@ -22,3 +22,4 @@ buildCache {
 }
 
 rootProject.name = "agentic-modular-mobile-grade-spm"
+include(":shared:core")
