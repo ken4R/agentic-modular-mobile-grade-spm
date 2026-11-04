@@ -1,0 +1,33 @@
+pluginManagement {
+    includeBuild("build-logic")
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "agentic-modular-mobile-grade-spm"
+
+// Logique partagée KMP
+include(":shared:core")
+listOf("auth", "catalog", "cart").forEach { feature ->
+    include(":shared:features:$feature")
+    include(":shared:features:$feature-api")
+}
+
+// UI Android. Les projets portent le suffixe -ui pour ne pas avoir le même nom
+// que le module KMP de la feature (collision des fichiers .kotlin_module à l'empaquetage).
+include(":android:app")
+listOf("auth", "catalog", "cart").forEach { feature ->
+    include(":android:features:$feature-ui")
+    project(":android:features:$feature-ui").projectDir = file("android/features/$feature")
+}

@@ -13,6 +13,8 @@ skie = "0.10.0"
 konsist = "0.17.0"
 detekt = "1.23.8"
 mvikotlin = "4.3.0"
+# Ajouté par le POC C (à reporter dans le template, voir docs/frictions.md). Même version qu'activity-ktx tirée par koin-android 4.1.0.
+activity-compose = "1.10.1"
 
 [libraries]
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -32,6 +34,12 @@ mvikotlin = { module = "com.arkivanov.mvikotlin:mvikotlin", version.ref = "mviko
 mvikotlin-main = { module = "com.arkivanov.mvikotlin:mvikotlin-main", version.ref = "mvikotlin" }
 konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+# Ajouts POC C : artefacts Compose versionnés par le BOM, activity-compose (hors BOM).
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
