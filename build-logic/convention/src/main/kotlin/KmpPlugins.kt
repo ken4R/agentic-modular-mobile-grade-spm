@@ -35,3 +35,11 @@ class KmpFeaturePlugin : Plugin<Project> {
         configureKmpLibrary()
     }
 }
+
+/** `shared` : module parapluie qui exporte core et les features dans `Shared.xcframework`, API Swift via SKIE. */
+class KmpUmbrellaPlugin : Plugin<Project> {
+    override fun apply(target: Project) = with(target) {
+        configureKmpLibrary()
+        pluginManager.apply("co.touchlab.skie")
+    }
+}

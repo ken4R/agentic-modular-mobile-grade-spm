@@ -14,6 +14,7 @@ dependencies {
     implementation(plugin(libs.plugins.android.application))
     implementation(plugin(libs.plugins.android.library))
     implementation(plugin(libs.plugins.sqldelight))
+    implementation(plugin(libs.plugins.skie))
 }
 
 gradlePlugin {
@@ -25,6 +26,10 @@ gradlePlugin {
         register("kmpFeature") {
             id = "poc.kmp-feature"
             implementationClass = "KmpFeaturePlugin"
+        }
+        register("kmpUmbrella") {
+            id = "poc.kmp-umbrella"
+            implementationClass = "KmpUmbrellaPlugin"
         }
         register("androidFeature") {
             id = "poc.android-feature"

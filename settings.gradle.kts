@@ -17,7 +17,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "agentic-modular-mobile-grade-spm"
 
-// Logique partagée KMP
+// Logique partagée KMP. :shared est le module parapluie qui produit Shared.xcframework.
+include(":shared")
 include(":shared:core")
 listOf("auth", "catalog", "cart").forEach { feature ->
     include(":shared:features:$feature")
