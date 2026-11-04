@@ -4,7 +4,9 @@
 |---|---|---|---|---|---|
 | 2026-11-04 | S1 — ADR 0001 + vérification des versions | 87k / 500k | 0,69 $ | 0 | Environnement cloud : `dl.google.com` refusé par le proxy (403), donc AGP, androidx et SDK Android non téléchargeables. Build Android local impossible, validation via CI uniquement. Pas de Xcode (Linux). |
 | 2026-11-04 | S1 — vérification des versions | — | — | 0 | `libs.versions.toml` est en retard (voir ci-dessous). Il appartient au socle : la mise à jour doit se faire dans le template puis passer par `sync-socle.sh`. |
-| 2026-11-04 | CI | — | — | 0 | Job `ios` (`macos-15`) jamais attribué à un runner, annulé après 15 à 19 min. Quota de minutes macOS probable. |
+| 2026-11-04 | CI | — | — | 0 | Job `ios` (`macos-15`) jamais attribué à un runner sur `main`, annulé après 15 à 19 min. Sur la branche à 18:57 UTC, un runner a bien été attribué : attente de file plutôt que quota. |
+| 2026-11-04 | S1 — étapes 3 à 5 : squelette Gradle, modules KMP, app Android | 180k / 500k | 4,45 $ (cumul session) | 0 | Build Android validé uniquement par la CI (vert du premier coup, 3 min 35). Tests KMP vérifiés en local via un projet JVM jetable (16/16), Maven Central renvoyant des 429 en rafale : 7 essais nécessaires. Catalogue du socle incomplet : artefacts Compose et `activity-compose` ajoutés localement, à reporter dans le template sous peine d'être écrasés par `sync-socle.sh`. |
+| 2026-11-04 | S1 — tests | — | — | 0 | `advanceUntilIdle()` n'exécute pas les coroutines de `backgroundScope` : les Stores testés reçoivent un scope sur `StandardTestDispatcher(testScheduler)`. |
 
 ## Versions stables relevées sur Maven Central le 2026-11-04
 
