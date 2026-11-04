@@ -46,3 +46,15 @@
 - **Simulateur** : `name=iPhone 17 Pro Max` refusé une fois par xcodebuild alors que listé ; `id=<UDID>` fiable.
 - **check-architecture.sh (template)** : 2 violations SwiftLint `--strict` → script en succès (« swiftlint absent »).
 - **Sandbox agent** : XcodeGen et le cache SwiftLint écrivent hors du dépôt, exécution hors sandbox nécessaire.
+
+## 2026-11-04 — Semaine 1, étape 8 (feature auth)
+
+- **SKIE / sealed interface (ouvert)** : `onEnum(of:)` introuvable pour `AuthIntent` (sealed interface d'un module
+  de feature exporté), alors qu'il fonctionne pour `Outcome` (sealed class de core). 2 échecs consécutifs
+  (tableau d'existentiels, puis fonction générique typée concrètement) → arrêt selon AGENTS.md.
+  Hypothèse non vérifiée : SKIE ne génère pas l'interop sealed pour ce cas ; le Swift généré (`shared/build/`)
+  n'est pas lisible par l'agent. Option C retenue par l'humain : contrat limité au `StateFlow`, `switch`
+  exhaustif en attente. À reprendre : A (`sealed class`) ou B (diagnostic sur le Swift généré).
+- **check-architecture.sh (template)** : 2 violations detekt réelles affichées « TODO: brancher detekt », sortie 0.
+- **Tests UI Android** : instrumentés, exécutés sur un émulateur headless démarré par l'agent (AVD API 36).
+- **Interventions humaines** : 3 au total (gradle.properties, consigne d'autonomie, choix de l'option C).

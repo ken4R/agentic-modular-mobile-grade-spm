@@ -15,6 +15,7 @@ detekt = "1.23.8"
 mvikotlin = "4.3.0"
 # POC C : ajouts à remonter au template
 activity = "1.10.1"
+navigation = "2.9.0"
 
 [libraries]
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -36,6 +37,7 @@ konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 # POC C : ajouts à remonter au template (artefacts Compose versionnés par le BOM)
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }

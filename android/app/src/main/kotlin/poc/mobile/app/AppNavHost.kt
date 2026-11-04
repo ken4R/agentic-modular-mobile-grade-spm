@@ -1,23 +1,31 @@
 package poc.mobile.app
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.DisposableEffect
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import org.koin.compose.koinInject
+import poc.mobile.core.mvi.BaseStore
+import poc.mobile.feature.auth.AuthStore
+import poc.mobile.feature.auth.api.AuthRoute
+import poc.mobile.feature.auth.ui.AuthScreen
 
-/** Point d'entrée de la navigation : les routes des features s'y ajoutent (skill new-feature-module). */
+/** Navigation de l'app : une route par feature, Stores fournis par Koin (skill new-feature-module). */
 @Composable
 fun AppNavHost() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("POC C — Gradle + SPM")
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = AuthRoute.PATH) {
+        composable(AuthRoute.PATH) {
+            AuthScreen(store = rememberStore<AuthStore>())
+        }
     }
 }
 
-@Preview
+/** Store fourni par Koin, fermé quand la destination quitte la composition. */
 @Composable
-private fun AppNavHostPreview() {
-    AppNavHost()
+private inline fun <reified T : BaseStore> rememberStore(): T {
+    val store = koinInject<T>()
+    DisposableEffect(store) { onDispose { store.close() } }
+    return store
 }

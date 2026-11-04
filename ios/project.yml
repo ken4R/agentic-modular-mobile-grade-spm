@@ -8,6 +8,8 @@ options:
 packages:
   Core:
     path: Core
+  Auth:
+    path: Features/Auth
 targets:
   App:
     type: application
@@ -15,6 +17,8 @@ targets:
     sources: [App/Sources]
     dependencies:
       - package: Core
+      - package: Auth
+        product: AuthUI
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: poc.mobile.app

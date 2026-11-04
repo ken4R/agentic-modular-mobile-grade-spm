@@ -10,11 +10,13 @@
 		18CA8D177BFC7B334507A2C0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB44413F7C08EC90C6C84802 /* RootView.swift */; };
 		1CA998C627766237F2232BEB /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 2FEFAD4646D1EBA99E6E7E08 /* Core */; };
 		2CE353D77941F9B3590B997D /* PocApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B2D3CABE637B10E1A75280 /* PocApp.swift */; };
+		95C38BB4FB56187972591E16 /* AuthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4D9954203AE8248647227052 /* AuthUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		49B2D3CABE637B10E1A75280 /* PocApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocApp.swift; sourceTree = "<group>"; };
 		49D88A349FD70A9153DD2C03 /* App.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A591550AFF7B284FAF481E2 /* Auth */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Auth; path = Features/Auth; sourceTree = SOURCE_ROOT; };
 		EB44413F7C08EC90C6C84802 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		F817D4621F1B8AEE150CC10A /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Core; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -25,6 +27,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CA998C627766237F2232BEB /* Core in Frameworks */,
+				95C38BB4FB56187972591E16 /* AuthUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,6 +56,7 @@
 		A09E2501204CB86B4B2B6562 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				9A591550AFF7B284FAF481E2 /* Auth */,
 				F817D4621F1B8AEE150CC10A /* Core */,
 			);
 			name = Packages;
@@ -83,6 +87,7 @@
 			name = App;
 			packageProductDependencies = (
 				2FEFAD4646D1EBA99E6E7E08 /* Core */,
+				4D9954203AE8248647227052 /* AuthUI */,
 			);
 			productName = App;
 			productReference = 49D88A349FD70A9153DD2C03 /* App.app */;
@@ -109,6 +114,7 @@
 			);
 			mainGroup = 4102E3E068508DD683953C7D;
 			packageReferences = (
+				63FCC86D0D781E69BDA4D762 /* XCLocalSwiftPackageReference "Features/Auth" */,
 				D07C70B4346213E4B140367C /* XCLocalSwiftPackageReference "Core" */,
 			);
 			projectDirPath = "";
@@ -311,6 +317,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		63FCC86D0D781E69BDA4D762 /* XCLocalSwiftPackageReference "Features/Auth" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Features/Auth;
+		};
 		D07C70B4346213E4B140367C /* XCLocalSwiftPackageReference "Core" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Core;
@@ -321,6 +331,10 @@
 		2FEFAD4646D1EBA99E6E7E08 /* Core */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Core;
+		};
+		4D9954203AE8248647227052 /* AuthUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AuthUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -7,6 +7,8 @@ plugins {
 // Modules visibles depuis Swift. Toute nouvelle feature s'ajoute ici (skill new-feature-module).
 val exportedModules = listOf(
     ":shared:core",
+    ":shared:features:auth-api",
+    ":shared:features:auth",
 )
 
 kotlin {

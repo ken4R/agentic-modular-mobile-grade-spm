@@ -25,7 +25,10 @@ fun Project.pocNamespace(): String =
 fun CommonExtension<*, *, *, *, *, *>.configureAndroidCommon(project: Project) {
     namespace = project.pocNamespace()
     compileSdk = COMPILE_SDK
-    defaultConfig { minSdk = MIN_SDK }
+    defaultConfig {
+        minSdk = MIN_SDK
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
     compileOptions {
         sourceCompatibility = JAVA_VERSION
         targetCompatibility = JAVA_VERSION

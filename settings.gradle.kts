@@ -25,3 +25,6 @@ rootProject.name = "agentic-modular-mobile-grade-spm"
 include(":shared:core")
 include(":shared:konsist")
 include(":android:app")
+include(":shared:features:auth-api")
+include(":shared:features:auth")
+include(":android:features:auth")
