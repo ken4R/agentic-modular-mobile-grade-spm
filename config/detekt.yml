@@ -1,0 +1,7 @@
+# Surcharges du jeu de règles par défaut de detekt (buildUponDefaultConfig = true).
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+style:
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview']

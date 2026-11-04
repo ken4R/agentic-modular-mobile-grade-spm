@@ -12,4 +12,5 @@ dependencies {
     implementation(marker(libs.plugins.compose.compiler))
     implementation(marker(libs.plugins.android.library))
     implementation(marker(libs.plugins.android.application))
+    implementation(marker(libs.plugins.detekt))
 }

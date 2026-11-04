@@ -1,3 +1,4 @@
+import convention.configureDetekt
 import convention.configureKmpLibrary
 import convention.configureKmpTests
 
@@ -8,3 +9,4 @@ plugins {
 
 configureKmpLibrary()
 configureKmpTests()
+configureDetekt()

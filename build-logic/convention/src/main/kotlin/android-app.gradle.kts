@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.ApplicationExtension
 import convention.TARGET_SDK
 import convention.configureAndroidCompose
+import convention.configureDetekt
 
 plugins {
     id("com.android.application")
@@ -17,3 +18,5 @@ extensions.configure<ApplicationExtension> {
         versionName = "0.1.0"
     }
 }
+
+configureDetekt()

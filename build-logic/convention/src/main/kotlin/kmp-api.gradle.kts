@@ -1,3 +1,4 @@
+import convention.configureDetekt
 import convention.configureKmpLibrary
 
 // Contrats publics uniquement (navigation, événements) : pas de dépendances de test imposées.
@@ -7,3 +8,4 @@ plugins {
 }
 
 configureKmpLibrary()
+configureDetekt()

@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.LibraryExtension
 import convention.configureAndroidCompose
+import convention.configureDetekt
 
 plugins {
     id("com.android.library")
@@ -8,3 +9,4 @@ plugins {
 }
 
 configureAndroidCompose(extensions.getByType<LibraryExtension>())
+configureDetekt()
