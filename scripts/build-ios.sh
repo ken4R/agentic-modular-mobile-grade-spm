@@ -1,6 +1,24 @@
 #!/usr/bin/env bash
-# À compléter par le POC avec la commande de build ios de son approche (voir CLAUDE.md).
-# Doit : builder l'app ios en debug, sortir 0 si OK, laisser les logs sur stdout (lus par bench/cache-hit.sh).
+# Approche C : Shared.xcframework (debug) via Gradle, puis app SwiftUI via xcodebuild (SPM natif).
+# Gradle est toujours relancé : un changement KMP doit invalider le XCFramework (bench/incremental.sh).
+# Sort 0 si OK, laisse les logs sur stdout (bench/cache-hit.sh lit "N actionable tasks: ... M from cache").
+# IOS_DESTINATION permet de cibler un autre simulateur que celui de CLAUDE.md (absent en local).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-echo "TODO: implémenter le build ios pour cette approche" >&2; exit 1
+DESTINATION="${IOS_DESTINATION:-platform=iOS Simulator,name=iPhone 16}"
+command -v xcodebuild >/dev/null || { echo "xcodebuild absent : build iOS impossible sur cette machine" >&2; exit 1; }
+[ -x ./gradlew ] || { echo "gradlew absent : initialiser le wrapper Gradle" >&2; exit 1; }
+
+./gradlew :shared:assembleSharedDebugXCFramework --console=plain
+
+# Conteneur Xcode : workspace, sinon projet, sinon package SPM ios/App.
+cd ios
+if [ -d App.xcworkspace ]; then
+  set -- -workspace App.xcworkspace
+elif [ -d App.xcodeproj ]; then
+  set -- -project App.xcodeproj
+else
+  [ -f App/Package.swift ] || { echo "ni ios/App.xcworkspace, ni ios/App.xcodeproj, ni ios/App/Package.swift" >&2; exit 1; }
+  cd App; set --
+fi
+xcodebuild "$@" -scheme App -configuration Debug -destination "$DESTINATION" build
