@@ -11,9 +11,11 @@ cp -R shared/build/XCFrameworks/debug/Shared.xcframework ios/Core/
 command -v xcodegen >/dev/null || brew install xcodegen
 (cd ios/App && xcodegen generate)
 
+# Build seul : destination générique, qui ne dépend pas des simulateurs installés sur le runner
+# (un runner macos-15 sans simulateur "iPhone 16" a fait échouer la CI). Les tests UI choisiront un appareil.
 cd ios/App
 xcodebuild -scheme App \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath ../../build/DerivedData \
   CODE_SIGNING_ALLOWED=NO \
   build
