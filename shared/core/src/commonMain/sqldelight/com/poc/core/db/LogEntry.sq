@@ -1,0 +1,10 @@
+CREATE TABLE LogEntry (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message TEXT NOT NULL
+);
+
+insert:
+INSERT INTO LogEntry(message) VALUES (?);
+
+selectAll:
+SELECT * FROM LogEntry;
