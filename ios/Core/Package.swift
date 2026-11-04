@@ -11,6 +11,7 @@ let package = Package(
     ],
     targets: [
         .binaryTarget(name: "Shared", path: "Shared.xcframework"),
-        .target(name: "Core", dependencies: ["Shared"]),
+        // Shared est un framework statique : le driver SQLDelight natif (SQLiter) a besoin de libsqlite3 au link de l'app.
+        .target(name: "Core", dependencies: ["Shared"], linkerSettings: [.linkedLibrary("sqlite3")]),
     ]
 )
