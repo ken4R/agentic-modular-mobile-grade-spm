@@ -34,3 +34,15 @@
   officielle limitée à Xcode 16.3.
 - **expect/actual classes** en bêta (avertissement) : remplacées par une interface + implémentations par plateforme.
 - **Framework statique** : l'app iOS devra lier `libsqlite3` (driver natif SQLDelight).
+
+## 2026-11-04 — Semaine 1, étapes 6-7
+
+- **App iOS** : SPM ne produit pas d'app iOS ; `App` est une cible Xcode générée par XcodeGen
+  (`ios/project.yml`), `App.xcodeproj` commité car la CI commune n'installe pas XcodeGen. Écart avec le plan
+  (« package SPM App ») ; à revoir lors du fork POC A (Bazel / rules_xcodeproj).
+- **binaryTarget** hors de la racine du package (`../../shared/build/...`) : accepté par SPM (Xcode 26.2).
+- **DI iOS** : Koin est démarré par `IosGraph.start()` (Kotlin, parapluie) ; les modules des features s'y ajoutent,
+  et non dans le code Swift de `ios/App` comme le décrit la skill `new-feature-module`.
+- **Simulateur** : `name=iPhone 17 Pro Max` refusé une fois par xcodebuild alors que listé ; `id=<UDID>` fiable.
+- **check-architecture.sh (template)** : 2 violations SwiftLint `--strict` → script en succès (« swiftlint absent »).
+- **Sandbox agent** : XcodeGen et le cache SwiftLint écrivent hors du dépôt, exécution hors sandbox nécessaire.

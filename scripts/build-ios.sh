@@ -10,15 +10,5 @@ command -v xcodebuild >/dev/null || { echo "xcodebuild absent : build iOS imposs
 [ -x ./gradlew ] || { echo "gradlew absent : initialiser le wrapper Gradle" >&2; exit 1; }
 
 ./gradlew :shared:assembleSharedDebugXCFramework --console=plain
-
-# Conteneur Xcode : workspace, sinon projet, sinon package SPM ios/App.
-cd ios
-if [ -d App.xcworkspace ]; then
-  set -- -workspace App.xcworkspace
-elif [ -d App.xcodeproj ]; then
-  set -- -project App.xcodeproj
-else
-  [ -f App/Package.swift ] || { echo "ni ios/App.xcworkspace, ni ios/App.xcodeproj, ni ios/App/Package.swift" >&2; exit 1; }
-  cd App; set --
-fi
-xcodebuild "$@" -scheme App -configuration Debug -destination "$DESTINATION" build
+# Projet généré par XcodeGen depuis ios/project.yml.
+xcodebuild -project ios/App.xcodeproj -scheme App -configuration Debug -destination "$DESTINATION" build
