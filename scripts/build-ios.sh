@@ -13,9 +13,11 @@ command -v xcodegen >/dev/null || brew install xcodegen
 
 # Build seul : destination générique, qui ne dépend pas des simulateurs installés sur le runner
 # (un runner macos-15 sans simulateur "iPhone 16" a fait échouer la CI). Les tests UI choisiront un appareil.
+# ARCHS=arm64 : la destination générique builde aussi x86_64, slice absente de Shared.xcframework (iosSimulatorArm64 seul).
 cd ios/App
 xcodebuild -scheme App \
   -destination 'generic/platform=iOS Simulator' \
+  ARCHS=arm64 \
   -derivedDataPath ../../build/DerivedData \
   CODE_SIGNING_ALLOWED=NO \
   build
