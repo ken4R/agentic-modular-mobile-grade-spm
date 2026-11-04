@@ -24,3 +24,13 @@
 - **check-architecture.sh (template)** : sans `ios/`, SwiftLint échoue (« No lintable files ») et le script
   affiche « swiftlint absent » en sortant 0.
 - **Sandbox agent** : lecture de `build/` refusée, les rapports de tests ne sont consultables que via la sortie Gradle.
+
+## 2026-11-04 — Semaine 1, étape 5
+
+- **CLAUDE.md** : `:shared:assembleXCFramework` n'existe pas (tâche réelle : `assembleSharedXCFramework`,
+  dérivée du nom du XCFramework) et `:shared:allTests` ne couvre que le parapluie. Commandes corrigées.
+- **SKIE** : 0.10.6 retenu (Kotlin 2.2.0 et 2.2.10) ; chargé par la convention `kmp-umbrella` avec le plugin Kotlin
+  pour partager le classloader. XCFramework debug OK avec Kotlin 2.2.0 + Xcode 26.2, malgré la compatibilité
+  officielle limitée à Xcode 16.3.
+- **expect/actual classes** en bêta (avertissement) : remplacées par une interface + implémentations par plateforme.
+- **Framework statique** : l'app iOS devra lier `libsqlite3` (driver natif SQLDelight).

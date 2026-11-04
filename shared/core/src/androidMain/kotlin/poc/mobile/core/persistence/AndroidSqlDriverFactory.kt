@@ -6,7 +6,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.db.SqlSchema
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 
-actual class SqlDriverFactory(private val context: Context) {
-    actual fun create(schema: SqlSchema<QueryResult.Value<Unit>>, name: String): SqlDriver =
+class AndroidSqlDriverFactory(private val context: Context) : SqlDriverFactory {
+    override fun create(schema: SqlSchema<QueryResult.Value<Unit>>, name: String): SqlDriver =
         AndroidSqliteDriver(schema, context, name)
 }

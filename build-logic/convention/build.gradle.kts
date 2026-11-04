@@ -13,4 +13,5 @@ dependencies {
     implementation(marker(libs.plugins.android.library))
     implementation(marker(libs.plugins.android.application))
     implementation(marker(libs.plugins.detekt))
+    implementation(marker(libs.plugins.skie))
 }
