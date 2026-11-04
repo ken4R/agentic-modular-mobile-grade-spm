@@ -33,6 +33,7 @@ class AndroidFeaturePlugin : Plugin<Project> {
             buildFeatures.compose = true
         }
         addComposeDependencies()
+        configureDetekt()
     }
 }
 
@@ -45,7 +46,7 @@ class AndroidAppPlugin : Plugin<Project> {
             buildFeatures.compose = true
             defaultConfig {
                 applicationId = "com.poc.mobile"
-                targetSdk = Sdk.TARGET
+                targetSdk = TARGET_SDK
                 versionCode = 1
                 versionName = "0.1.0"
             }
@@ -58,5 +59,6 @@ class AndroidAppPlugin : Plugin<Project> {
         dependencies {
             add("implementation", libs.lib("activity-compose"))
         }
+        configureDetekt()
     }
 }

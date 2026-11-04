@@ -1,0 +1,8 @@
+# Config detekt du POC C : on part des règles par défaut (buildUponDefaultConfig) et on n'ajuste que l'indispensable.
+naming:
+  FunctionNaming:
+    # Les fonctions @Composable sont en PascalCase par convention Compose.
+    ignoreAnnotated: ['Composable']
+style:
+  MagicNumber:
+    excludes: ['**/test/**', '**/commonTest/**', '**/androidUnitTest/**', '**/Fake*.kt']

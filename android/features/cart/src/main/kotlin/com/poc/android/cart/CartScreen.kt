@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.poc.cart.CartIntent
 import com.poc.cart.CartStore
 import com.poc.cart.CartUiState
+import com.poc.core.format.formatPrice
 
 @Composable
 fun CartScreen(store: CartStore, modifier: Modifier = Modifier) {
@@ -36,7 +37,7 @@ fun CartContent(state: CartUiState, onIntent: (CartIntent) -> Unit, modifier: Mo
                 TextButton(onClick = { onIntent(CartIntent.Remove(line.productId)) }) { Text("Retirer") }
             }
         }
-        Text("Total : ${state.totalCents / 100},${(state.totalCents % 100).toString().padStart(2, '0')} €", style = MaterialTheme.typography.titleMedium)
+        Text("Total : ${formatPrice(state.totalCents)}", style = MaterialTheme.typography.titleMedium)
         TextButton(onClick = { onIntent(CartIntent.Clear) }) { Text("Vider") }
     }
 }

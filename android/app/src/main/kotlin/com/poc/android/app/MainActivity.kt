@@ -62,7 +62,10 @@ private fun PocApp() {
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
             when (route) {
-                CatalogRoute.PATH -> CatalogScreen(catalogStore, onAddToCart = { cartStore.dispatch(CartIntent.Add(it)) })
+                CatalogRoute.PATH -> CatalogScreen(
+                    store = catalogStore,
+                    onAddToCart = { cartStore.dispatch(CartIntent.Add(it)) },
+                )
                 CartRoute.PATH -> CartScreen(cartStore)
                 AuthRoute.PATH -> AuthScreen(authStore)
             }

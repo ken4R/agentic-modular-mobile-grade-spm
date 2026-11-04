@@ -9,6 +9,7 @@
 | 2026-11-04 | S1 — tests | — | — | 0 | `advanceUntilIdle()` n'exécute pas les coroutines de `backgroundScope` : les Stores testés reçoivent un scope sur `StandardTestDispatcher(testScheduler)`. |
 | 2026-11-04 | S1 — étape 6 : XCFramework, SKIE, SPM, app SwiftUI | 222k / 500k | 6,63 $ (cumul session) | 0 | SKIE 0.10.0 (socle) ne supporte pas Kotlin 2.2.0 : passage à 0.10.6, à reporter dans le template. Une app iOS ne se build pas avec SPM seul : `.xcodeproj` généré par XcodeGen (`ios/App/project.yml`). Framework statique : `libsqlite3` à lier côté SPM pour le driver SQLDelight natif (1 aller-retour CI). Validation iOS uniquement par la CI. |
 | 2026-11-04 | CI | — | — | 0 | Job `ios` à nouveau annulé après 15 min sans runner macOS, puis vert à la relance : attente de file macOS intermittente. |
+| 2026-11-04 | S1 — étape 7 : detekt, Konsist, SwiftLint | ~260k / 500k | ~7,5 $ (cumul session) | 0 | `check-architecture.sh` (socle) masque les échecs : `./gradlew detekt -q 2>/dev/null \|\| … \|\| echo "TODO"` sort toujours 0. Un échec detekt ou Konsist n'apparaît que comme « TODO: brancher … » dans le log. À corriger dans le template (retirer les `\|\| echo` de repli). detekt validé en local via le jar CLI (0 issue), Konsist via un projet JVM jetable (3 règles, vérifiées aussi sur des violations volontaires). |
 
 ## Versions stables relevées sur Maven Central le 2026-11-04
 

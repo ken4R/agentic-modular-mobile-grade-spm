@@ -15,6 +15,7 @@ dependencies {
     implementation(plugin(libs.plugins.android.library))
     implementation(plugin(libs.plugins.sqldelight))
     implementation(plugin(libs.plugins.skie))
+    implementation(plugin(libs.plugins.detekt))
 }
 
 gradlePlugin {
@@ -30,6 +31,10 @@ gradlePlugin {
         register("kmpUmbrella") {
             id = "poc.kmp-umbrella"
             implementationClass = "KmpUmbrellaPlugin"
+        }
+        register("konsist") {
+            id = "poc.konsist"
+            implementationClass = "KonsistPlugin"
         }
         register("androidFeature") {
             id = "poc.android-feature"

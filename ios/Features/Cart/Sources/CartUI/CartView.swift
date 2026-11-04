@@ -20,7 +20,7 @@ public struct CartView: View {
                         Button("Retirer") { viewModel.send(CartIntentRemove(productId: line.productId)) }
                     }
                 }
-                Text("Total : \(formatPrice(cents: viewModel.state.totalCents))")
+                Text("Total : \(PriceKt.formatPrice(cents: viewModel.state.totalCents))")
                 Button("Vider") { viewModel.send(CartIntentClear.shared) }
             }
         }

@@ -19,6 +19,7 @@ private fun Project.configureKmpLibrary() {
         }
     }
     extensions.configure<LibraryExtension> { configureAndroidCommon(this) }
+    configureDetekt()
 }
 
 /** `shared/core` : KMP Android + iOS, SQLDelight. */
@@ -29,7 +30,10 @@ class KmpCorePlugin : Plugin<Project> {
     }
 }
 
-/** `shared/features/<feature>` et `<feature>-api` : KMP Android + iOS. Les dépendances sont déclarées par chaque module. */
+/**
+ * `shared/features/<feature>` et `<feature>-api` : KMP Android + iOS.
+ * Les dépendances sont déclarées par chaque module.
+ */
 class KmpFeaturePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         configureKmpLibrary()
@@ -41,5 +45,20 @@ class KmpUmbrellaPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         configureKmpLibrary()
         pluginManager.apply("co.touchlab.skie")
+    }
+}
+
+/** `shared/konsist` : tests d'architecture Konsist, cible JVM uniquement. */
+class KonsistPlugin : Plugin<Project> {
+    override fun apply(target: Project) = with(target) {
+        pluginManager.apply("org.jetbrains.kotlin.multiplatform")
+        extensions.configure<KotlinMultiplatformExtension> {
+            jvm()
+            sourceSets.getByName("jvmTest").dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.lib("konsist"))
+            }
+        }
+        configureDetekt()
     }
 }

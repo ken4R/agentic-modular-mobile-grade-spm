@@ -18,7 +18,7 @@ public struct CatalogView: View {
             } else {
                 List(viewModel.state.products, id: \.id) { product in
                     HStack {
-                        Text("\(product.name) — \(formatPrice(cents: product.priceCents))")
+                        Text("\(product.name) — \(PriceKt.formatPrice(cents: product.priceCents))")
                         Spacer()
                         Button("Ajouter") { onAddToCart(product.id) }
                     }

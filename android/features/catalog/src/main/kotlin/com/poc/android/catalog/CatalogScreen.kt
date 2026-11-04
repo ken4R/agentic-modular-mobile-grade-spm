@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.poc.catalog.CatalogIntent
 import com.poc.catalog.CatalogStore
 import com.poc.catalog.CatalogUiState
+import com.poc.core.format.formatPrice
 
 /** [onAddToCart] est fourni par l'app : l'écran ne connaît pas la feature cart. */
 @Composable
@@ -45,5 +46,3 @@ fun CatalogContent(state: CatalogUiState, onAddToCart: (String) -> Unit, modifie
         }
     }
 }
-
-internal fun formatPrice(cents: Long): String = "${cents / 100},${(cents % 100).toString().padStart(2, '0')} €"

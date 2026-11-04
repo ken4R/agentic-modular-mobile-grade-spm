@@ -20,6 +20,7 @@ rootProject.name = "agentic-modular-mobile-grade-spm"
 // Logique partagée KMP. :shared est le module parapluie qui produit Shared.xcframework.
 include(":shared")
 include(":shared:core")
+include(":shared:konsist") // tests d'architecture, lancés par scripts/check-architecture.sh
 listOf("auth", "catalog", "cart").forEach { feature ->
     include(":shared:features:$feature")
     include(":shared:features:$feature-api")
