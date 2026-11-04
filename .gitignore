@@ -10,3 +10,4 @@ DerivedData/
 local.properties
 .env
 bench/results-*.json
+.kotlin/
