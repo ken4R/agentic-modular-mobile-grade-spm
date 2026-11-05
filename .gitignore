@@ -10,6 +10,12 @@ DerivedData/
 local.properties
 .env
 bench/results-*.json
+<<<<<<< HEAD
 # iOS : artefacts générés par scripts/build-ios.sh
 ios/Core/Shared.xcframework/
 ios/App/App.xcodeproj/
+=======
+.kotlin/
+xcuserdata/
+.swiftpm/
+>>>>>>> origin/main

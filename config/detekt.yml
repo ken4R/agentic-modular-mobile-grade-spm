@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Config detekt du POC C : on part des règles par défaut (buildUponDefaultConfig) et on n'ajuste que l'indispensable.
 naming:
   FunctionNaming:
@@ -6,3 +7,12 @@ naming:
 style:
   MagicNumber:
     excludes: ['**/test/**', '**/commonTest/**', '**/androidUnitTest/**', '**/Fake*.kt']
+=======
+# Surcharges du jeu de règles par défaut de detekt (buildUponDefaultConfig = true).
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+style:
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview']
+>>>>>>> origin/main

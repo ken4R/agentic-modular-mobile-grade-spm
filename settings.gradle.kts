@@ -8,6 +8,10 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
+<<<<<<< HEAD
+=======
+    // Aucun module ne déclare ses propres dépôts.
+>>>>>>> origin/main
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
@@ -15,6 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
+<<<<<<< HEAD
 rootProject.name = "agentic-modular-mobile-grade-spm"
 
 // Logique partagée KMP. :shared est le module parapluie qui produit Shared.xcframework.
@@ -33,3 +38,17 @@ listOf("auth", "catalog", "cart").forEach { feature ->
     include(":android:features:$feature-ui")
     project(":android:features:$feature-ui").projectDir = file("android/features/$feature")
 }
+=======
+// Cache local seul en semaine 1 ; le cache distant arrive en semaine 2 (plan-action §2).
+buildCache {
+    local { isEnabled = true }
+}
+
+rootProject.name = "agentic-modular-mobile-grade-spm"
+include(":shared:core")
+include(":shared:konsist")
+include(":android:app")
+include(":shared:features:auth-api")
+include(":shared:features:auth")
+include(":android:features:auth")
+>>>>>>> origin/main

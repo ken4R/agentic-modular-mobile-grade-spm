@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
+<<<<<<< HEAD
     id("poc.kmp-umbrella")
 }
 
@@ -13,6 +14,16 @@ val exportedModules = listOf(
     ":shared:features:catalog-api",
     ":shared:features:cart",
     ":shared:features:cart-api",
+=======
+    id("kmp-umbrella")
+}
+
+// Modules visibles depuis Swift. Toute nouvelle feature s'ajoute ici (skill new-feature-module).
+val exportedModules = listOf(
+    ":shared:core",
+    ":shared:features:auth-api",
+    ":shared:features:auth",
+>>>>>>> origin/main
 )
 
 kotlin {
@@ -25,9 +36,14 @@ kotlin {
             xcFramework.add(this)
         }
     }
+<<<<<<< HEAD
     sourceSets {
         commonMain.dependencies {
             exportedModules.forEach { api(project(it)) }
         }
+=======
+    sourceSets.commonMain.dependencies {
+        exportedModules.forEach { api(project(it)) }
+>>>>>>> origin/main
     }
 }

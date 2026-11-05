@@ -10,8 +10,8 @@ Lis `AGENTS.md` avant toute action.
 
 ### Commandes
 - Android : `./gradlew :android:app:assembleDebug`
-- Tests KMP : `./gradlew :shared:allTests`
-- XCFramework : `./gradlew :shared:assembleXCFramework`
+- Tests KMP : `./gradlew allTests` (tous les modules ; `:shared` est le parapluie iOS, sans tests)
+- XCFramework : `./gradlew :shared:assembleSharedDebugXCFramework` (debug, utilisé par `build-ios.sh`) ou `:shared:assembleSharedXCFramework` (debug + release)
 - iOS : `xcodebuild -scheme App -destination 'platform=iOS Simulator,name=iPhone 16' build`
 - Modules impactés : `./scripts/affected-modules.sh`
 

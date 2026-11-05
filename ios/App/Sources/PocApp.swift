@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import AuthUI
 import CartUI
 import CatalogUI
@@ -18,10 +19,20 @@ struct PocApp: App {
         authViewModel = AuthViewModel(store: SharedSdk.shared.authStore())
         catalogViewModel = CatalogViewModel(store: SharedSdk.shared.catalogStore())
         cartViewModel = CartViewModel(store: cartStore)
+=======
+import Core
+import SwiftUI
+
+@main
+struct PocApp: App {
+    init() {
+        IosGraph.shared.start()
+>>>>>>> origin/main
     }
 
     var body: some Scene {
         WindowGroup {
+<<<<<<< HEAD
             TabView {
                 CatalogView(viewModel: catalogViewModel) { [cartStore] productId in
                     cartStore.dispatch(intent: CartIntentAdd(productId: productId))
@@ -32,6 +43,9 @@ struct PocApp: App {
                 AuthView(viewModel: authViewModel)
                     .tabItem { Label("Compte", systemImage: "person") }
             }
+=======
+            RootView()
+>>>>>>> origin/main
         }
     }
 }
