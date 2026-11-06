@@ -12,3 +12,10 @@ command -v xcodebuild >/dev/null || { echo "xcodebuild absent : build iOS imposs
 ./gradlew :shared:assembleSharedDebugXCFramework --console=plain
 # Projet généré par XcodeGen depuis ios/project.yml.
 xcodebuild -project ios/App.xcodeproj -scheme App -configuration Debug -destination "$DESTINATION" build
+
+# SwiftLint tourne ici : check-architecture.sh n'est lancé que sur le runner Linux (job android).
+if command -v swiftlint >/dev/null 2>&1; then
+  swiftlint lint --strict ios
+elif [ "${CI:-false}" = "true" ]; then
+  echo "swiftlint absent en CI : échec (voir setup-ios-tools.sh)" >&2; exit 1
+fi

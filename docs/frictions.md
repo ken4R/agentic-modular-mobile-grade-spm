@@ -58,3 +58,16 @@
 - **check-architecture.sh (template)** : 2 violations detekt réelles affichées « TODO: brancher detekt », sortie 0.
 - **Tests UI Android** : instrumentés, exécutés sur un émulateur headless démarré par l'agent (AVD API 36).
 - **Interventions humaines** : 3 au total (gradle.properties, consigne d'autonomie, choix de l'option C).
+
+## 2026-11-06 — CI après synchronisation du socle
+
+- **test-shared.sh (template)** : `"${TEST_SHARED_CMD:-./gradlew :shared:allTests -q}"` est quoté, bash cherche un
+  exécutable nommé `./gradlew :shared:allTests -q` (exit 127). Et `:shared` est le parapluie, sans tests.
+  Corrigé ici en `${TEST_SHARED_CMD:-./gradlew allTests -q}` ; à reporter dans le template.
+- **check-architecture.sh (template)** : `grep -vE '^$'` sort 1 quand detekt ou Konsist réussissent en `-q`
+  (aucune sortie), donc `pipefail` fait échouer un check vert. Remplacé par `sed '/^$/d'`.
+- **check-architecture.sh (template)** : le script tourne dans le job `android` (Linux), où SwiftLint n'existe pas ;
+  avec `CI=true` il échouait toujours. SwiftLint est ignoré sur Linux et lancé par `build-ios.sh` sur le runner
+  macOS (installé par `setup-ios-tools.sh`). Correction à reporter dans le template (étape SwiftLint dans le job `ios`).
+- **Runner macOS** : le job `ios` de `main` (run 24, 2026-11-06) est resté sans runner puis annulé après 15 min ;
+  celui de `copie-main` (run 23, même jour) a été vert. Relancer avant de conclure à un échec.

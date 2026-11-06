@@ -8,14 +8,16 @@ DETEKT_CMD="${DETEKT_CMD:-./gradlew detekt -q}"
 KONSIST_CMD="${KONSIST_CMD:-./gradlew :shared:konsist:allTests -q}"
 SWIFTLINT_DIR="${SWIFTLINT_DIR:-ios}"
 
-echo "== detekt";   $DETEKT_CMD   2>&1 | grep -vE '^$' | tail -40
-echo "== konsist";  $KONSIST_CMD  2>&1 | grep -vE '^$' | tail -40
+echo "== detekt";   $DETEKT_CMD   2>&1 | sed '/^$/d' | tail -40
+echo "== konsist";  $KONSIST_CMD  2>&1 | sed '/^$/d' | tail -40
 
 echo "== swiftlint"
 if command -v swiftlint >/dev/null 2>&1; then
   swiftlint lint --strict "$SWIFTLINT_DIR" 2>&1 | tail -40
-elif [ "${CI:-false}" = "true" ]; then
+elif [ "${CI:-false}" = "true" ] && [ "$(uname)" = "Darwin" ]; then
   echo "swiftlint absent en CI : échec" >&2; exit 1
+elif [ "${CI:-false}" = "true" ]; then
+  echo "swiftlint : ignoré sur un runner Linux (lancé par build-ios.sh sur le runner macOS)"
 else
   echo "swiftlint absent en local : ignoré (brew install swiftlint)"
 fi
