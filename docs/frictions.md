@@ -71,3 +71,5 @@
   macOS (installé par `setup-ios-tools.sh`). Correction à reporter dans le template (étape SwiftLint dans le job `ios`).
 - **Runner macOS** : le job `ios` de `main` (run 24, 2026-11-06) est resté sans runner puis annulé après 15 min ;
   celui de `copie-main` (run 23, même jour) a été vert. Relancer avant de conclure à un échec.
+- **Simulateur en CI** : run 42299231316, le runner macos-15 (Xcode 16.4) n'avait aucun simulateur « iPhone 16 »
+  (exit 70). En CI, `build-ios.sh` vise `generic/platform=iOS Simulator` avec `ARCHS=arm64` (seule slice du XCFramework).

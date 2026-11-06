@@ -5,13 +5,21 @@
 # IOS_DESTINATION permet de cibler un autre simulateur que celui de CLAUDE.md (absent en local).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-DESTINATION="${IOS_DESTINATION:-platform=iOS Simulator,name=iPhone 16}"
+# En CI, destination générique : certains runners macos-15 n'ont aucun simulateur « iPhone 16 ».
+# ARCHS=arm64 car Shared.xcframework n'a que la slice iosSimulatorArm64 (pas de x86_64).
+if [ "${CI:-false}" = "true" ]; then
+  DESTINATION="${IOS_DESTINATION:-generic/platform=iOS Simulator}"
+  EXTRA_ARGS=(ARCHS=arm64)
+else
+  DESTINATION="${IOS_DESTINATION:-platform=iOS Simulator,name=iPhone 16}"
+  EXTRA_ARGS=()
+fi
 command -v xcodebuild >/dev/null || { echo "xcodebuild absent : build iOS impossible sur cette machine" >&2; exit 1; }
 [ -x ./gradlew ] || { echo "gradlew absent : initialiser le wrapper Gradle" >&2; exit 1; }
 
 ./gradlew :shared:assembleSharedDebugXCFramework --console=plain
 # Projet généré par XcodeGen depuis ios/project.yml.
-xcodebuild -project ios/App.xcodeproj -scheme App -configuration Debug -destination "$DESTINATION" build
+xcodebuild -project ios/App.xcodeproj -scheme App -configuration Debug -destination "$DESTINATION" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"} build
 
 # SwiftLint tourne ici : check-architecture.sh n'est lancé que sur le runner Linux (job android).
 if command -v swiftlint >/dev/null 2>&1; then
