@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+# SwiftLint du POC C, lancé en --strict par scripts/check-architecture.sh.
+included:
+  - ios
+excluded:
+  - ios/Core/Shared.xcframework
+  - ios/App/App.xcodeproj
+  - build
+=======
 included:
   - ios
 excluded:
@@ -7,3 +16,4 @@ opt_in_rules:
   - empty_count
   - force_unwrapping
   - sorted_imports
+>>>>>>> origin/main
