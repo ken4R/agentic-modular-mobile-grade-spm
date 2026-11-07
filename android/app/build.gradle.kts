@@ -7,6 +7,8 @@ dependencies {
     implementation(project(":shared:core"))
     implementation(project(":shared:features:auth"))
     implementation(project(":android:features:auth"))
+    implementation(project(":shared:features:catalog"))
+    implementation(project(":android:features:catalog"))
     implementation(libs.activity.compose)
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)
