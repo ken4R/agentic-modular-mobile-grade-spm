@@ -31,9 +31,11 @@ internal class InMemoryCartRepository(private val catalog: CatalogApi) : CartRep
             }
             return Outcome.Success(Unit)
         }
-        val product = catalog.findProduct(productId) ?: return Outcome.Failure("Produit introuvable")
-        mutableLines.update { it + CartLine(product.id, product.name, product.priceCents, quantity = 1) }
-        return Outcome.Success(Unit)
+        val product = catalog.findProduct(productId)
+        if (product != null) {
+            mutableLines.update { it + CartLine(product.id, product.name, product.priceCents, quantity = 1) }
+        }
+        return if (product != null) Outcome.Success(Unit) else Outcome.Failure("Produit introuvable")
     }
 
     override suspend fun decrement(productId: String) {
