@@ -1,6 +1,6 @@
 package poc.mobile.feature.cart
 
-import poc.mobile.feature.catalog.api.Prices
+import poc.mobile.core.Prices
 
 data class CartUiState(
     val lines: List<CartLine>,
