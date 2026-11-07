@@ -10,6 +10,10 @@ packages:
     path: Core
   Auth:
     path: Features/Auth
+  Catalog:
+    path: Features/Catalog
+  Cart:
+    path: Features/Cart
 targets:
   App:
     type: application
@@ -19,6 +23,10 @@ targets:
       - package: Core
       - package: Auth
         product: AuthUI
+      - package: Catalog
+        product: CatalogUI
+      - package: Cart
+        product: CartUI
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: poc.mobile.app

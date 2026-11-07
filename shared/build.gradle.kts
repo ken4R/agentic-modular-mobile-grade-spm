@@ -9,6 +9,10 @@ val exportedModules = listOf(
     ":shared:core",
     ":shared:features:auth-api",
     ":shared:features:auth",
+    ":shared:features:catalog-api",
+    ":shared:features:catalog",
+    ":shared:features:cart-api",
+    ":shared:features:cart",
 )
 
 kotlin {
