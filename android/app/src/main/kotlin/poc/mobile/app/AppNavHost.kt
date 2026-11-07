@@ -19,6 +19,10 @@ import poc.mobile.core.mvi.BaseStore
 import poc.mobile.feature.auth.AuthStore
 import poc.mobile.feature.auth.api.AuthRoute
 import poc.mobile.feature.auth.ui.AuthScreen
+import poc.mobile.feature.cart.CartIntent
+import poc.mobile.feature.cart.CartStore
+import poc.mobile.feature.cart.api.CartRoute
+import poc.mobile.feature.cart.ui.CartScreen
 import poc.mobile.feature.catalog.CatalogStore
 import poc.mobile.feature.catalog.api.CatalogRoute
 import poc.mobile.feature.catalog.ui.CatalogScreen
@@ -27,12 +31,15 @@ import poc.mobile.feature.catalog.ui.CatalogScreen
 private val tabs = listOf(
     AuthRoute.PATH to "Compte",
     CatalogRoute.PATH to "Catalogue",
+    CartRoute.PATH to "Panier",
 )
 
 /** Navigation de l'app : une route par feature, Stores fournis par Koin (skill new-feature-module). */
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
+    // Panier partagé entre les onglets : le catalogue y ajoute, l'onglet panier l'affiche.
+    val cartStore = rememberStore<CartStore>()
     Scaffold(bottomBar = { AppTabBar(navController) }) { padding ->
         NavHost(
             navController = navController,
@@ -43,7 +50,13 @@ fun AppNavHost() {
                 AuthScreen(store = rememberStore<AuthStore>())
             }
             composable(CatalogRoute.PATH) {
-                CatalogScreen(store = rememberStore<CatalogStore>(), onAddToCart = {})
+                CatalogScreen(
+                    store = rememberStore<CatalogStore>(),
+                    onAddToCart = { cartStore.accept(CartIntent.Add(it)) },
+                )
+            }
+            composable(CartRoute.PATH) {
+                CartScreen(store = cartStore)
             }
         }
     }

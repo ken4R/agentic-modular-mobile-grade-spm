@@ -1,4 +1,5 @@
 import AuthUI
+import CartUI
 import CatalogUI
 import Core
 import SwiftUI
@@ -7,6 +8,7 @@ import SwiftUI
 struct RootView: View {
     @State private var authViewModel = AuthViewModel(store: IosGraph.shared.authStore())
     @State private var catalogViewModel = CatalogViewModel(store: IosGraph.shared.catalogStore())
+    @State private var cartViewModel = CartViewModel(store: IosGraph.shared.cartStore())
 
     var body: some View {
         TabView {
@@ -16,10 +18,17 @@ struct RootView: View {
             }
             .tabItem { Label("Compte", systemImage: "person") }
             NavigationStack {
-                CatalogView(viewModel: catalogViewModel, onAddToCart: { _ in })
+                CatalogView(viewModel: catalogViewModel) { productId in
+                    cartViewModel.send(CartIntentAdd(productId: productId))
+                }
                     .navigationTitle("Catalogue")
             }
             .tabItem { Label("Catalogue", systemImage: "list.bullet") }
+            NavigationStack {
+                CartView(viewModel: cartViewModel)
+                    .navigationTitle("Panier")
+            }
+            .tabItem { Label("Panier", systemImage: "cart") }
         }
     }
 }

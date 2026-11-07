@@ -12,6 +12,7 @@
 		2CE353D77941F9B3590B997D /* PocApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B2D3CABE637B10E1A75280 /* PocApp.swift */; };
 		95C38BB4FB56187972591E16 /* AuthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4D9954203AE8248647227052 /* AuthUI */; };
 		62D47923A5AE02665EFDC13B /* CatalogUI in Frameworks */ = {isa = PBXBuildFile; productRef = 520ED46B6644756B327E441D /* CatalogUI */; };
+		31DDD50D183FC3C1F8DC8318 /* CartUI in Frameworks */ = {isa = PBXBuildFile; productRef = 602DDD579958997F2C016E00 /* CartUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		EB44413F7C08EC90C6C84802 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		F817D4621F1B8AEE150CC10A /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Core; sourceTree = SOURCE_ROOT; };
 		90E0514296FE9A9539D7B4F8 /* Catalog */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Catalog; path = Features/Catalog; sourceTree = SOURCE_ROOT; };
+		26052F36BD078EB7D49C76D5 /* Cart */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Cart; path = Features/Cart; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +31,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CA998C627766237F2232BEB /* Core in Frameworks */,
+				31DDD50D183FC3C1F8DC8318 /* CartUI in Frameworks */,
 				62D47923A5AE02665EFDC13B /* CatalogUI in Frameworks */,
 				95C38BB4FB56187972591E16 /* AuthUI in Frameworks */,
 			);
@@ -61,6 +64,7 @@
 			children = (
 				9A591550AFF7B284FAF481E2 /* Auth */,
 				90E0514296FE9A9539D7B4F8 /* Catalog */,
+				26052F36BD078EB7D49C76D5 /* Cart */,
 				F817D4621F1B8AEE150CC10A /* Core */,
 			);
 			name = Packages;
@@ -91,6 +95,7 @@
 			name = App;
 			packageProductDependencies = (
 				2FEFAD4646D1EBA99E6E7E08 /* Core */,
+				602DDD579958997F2C016E00 /* CartUI */,
 				520ED46B6644756B327E441D /* CatalogUI */,
 				4D9954203AE8248647227052 /* AuthUI */,
 			);
@@ -121,6 +126,7 @@
 			packageReferences = (
 				63FCC86D0D781E69BDA4D762 /* XCLocalSwiftPackageReference "Features/Auth" */,
 				2EF91E9F8F59E4B84BC40505 /* XCLocalSwiftPackageReference "Features/Catalog" */,
+				8B32499397FA64DA0BED62C5 /* XCLocalSwiftPackageReference "Features/Cart" */,
 				D07C70B4346213E4B140367C /* XCLocalSwiftPackageReference "Core" */,
 			);
 			projectDirPath = "";
@@ -335,6 +341,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Features/Catalog;
 		};
+		8B32499397FA64DA0BED62C5 /* XCLocalSwiftPackageReference "Features/Cart" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Features/Cart;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -349,6 +359,10 @@
 		520ED46B6644756B327E441D /* CatalogUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CatalogUI;
+		};
+		602DDD579958997F2C016E00 /* CartUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CartUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
