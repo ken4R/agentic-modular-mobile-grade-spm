@@ -73,3 +73,19 @@
   celui de `copie-main` (run 23, même jour) a été vert. Relancer avant de conclure à un échec.
 - **Simulateur en CI** : run 42299231316, le runner macos-15 (Xcode 16.4) n'avait aucun simulateur « iPhone 16 »
   (exit 70). En CI, `build-ios.sh` vise `generic/platform=iOS Simulator` avec `ARCHS=arm64` (seule slice du XCFramework).
+
+## 2026-11-07 — Semaine 1, features catalog et cart (agent cloud)
+
+- **Mesure « ajout d'une feature (agent) »** : catalog 3 min 23 s, cart 1 min 05 s d'écriture
+  (`bench/feature-timings.log`), après ~4 min de lecture (AGENTS.md, skill, feature auth, référence a13a2ef).
+  Les horodatages `end` sont pris avant la validation : l'environnement cloud ne peut ni compiler
+  (AGP indisponible, dl.google.com refusé par le proxy) ni lancer Xcode. La CI GitHub fait foi.
+- **Tokens** : `/cost` indisponible dans une session cloud ; estimation ~110 k tokens de contexte pour les deux features.
+- **Interventions humaines** : 0 (lancement validé dans le fil du plan).
+- **Skill new-feature-module** : ne dit pas comment une feature déclenche l'action d'une autre (ajout au panier
+  depuis le catalogue). Retenu : la vue catalog reçoit `onAddToCart` de l'app, qui l'envoie au `CartStore` ;
+  catalog ne dépend pas de cart, cart ne dépend que de catalog-api. Le Store partagé est détenu par l'app.
+- **Skill new-feature-module** : l'étape « ajouter le package à l'App » ne couvre pas `App.xcodeproj` commité
+  (CI sans XcodeGen) : les entrées pbxproj (6 sections) ont été écrites à la main, en miroir de `project.yml`.
+- **Tests UI** : Android instrumentés et `xcodebuild test` des packages non exécutés (ni émulateur, ni CI pour eux) ;
+  écrits sur le modèle d'auth, à lancer en local.
