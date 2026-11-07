@@ -84,7 +84,8 @@
 - **Interventions humaines** : 0 (lancement validé dans le fil du plan).
 - **Skill new-feature-module** : ne dit pas comment une feature déclenche l'action d'une autre (ajout au panier
   depuis le catalogue). Retenu : la vue catalog reçoit `onAddToCart` de l'app, qui l'envoie au `CartStore` ;
-  catalog ne dépend pas de cart, cart ne dépend que de catalog-api. Le Store partagé est détenu par l'app.
+  catalog ne dépend pas de cart, cart ne dépend que de catalog-api. Le Store partagé est détenu par l'app
+  (voir `docs/adr/0003-actions-inter-features.md`).
 - **Skill new-feature-module** : l'étape « ajouter le package à l'App » ne couvre pas `App.xcodeproj` commité
   (CI sans XcodeGen) : les entrées pbxproj (6 sections) ont été écrites à la main, en miroir de `project.yml`.
 - **Tests UI** : Android instrumentés et `xcodebuild test` des packages non exécutés (ni émulateur, ni CI pour eux) ;
