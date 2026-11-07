@@ -18,8 +18,17 @@ command -v xcodebuild >/dev/null || { echo "xcodebuild absent : build iOS imposs
 [ -x ./gradlew ] || { echo "gradlew absent : initialiser le wrapper Gradle" >&2; exit 1; }
 
 ./gradlew :shared:assembleSharedDebugXCFramework --console=plain
+# Diagnostic SKIE (docs/frictions.md, onEnum) : signatures `onEnum(of:)` générées, lisibles dans les logs CI.
+echo "--- SKIE : onEnum générés ---"
+grep -rhoE "func onEnum<[^(]*\(of sealed: [^)]*\)" shared/build/skie --include='*.swift' 2>/dev/null | sort -u | head -20 || true
 # Projet généré par XcodeGen depuis ios/project.yml.
 xcodebuild -project ios/App.xcodeproj -scheme App -configuration Debug -destination "$DESTINATION" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"} build
+
+# Contrats SKIE (ios/Core/Tests/ContractTests) : compilés en CI, le `switch` exhaustif sur onEnum(of:) est
+# vérifié à la compilation. Pas d'exécution : la destination CI est générique (aucun simulateur garanti).
+if [ "${CI:-false}" = "true" ]; then
+  (cd ios/Core && xcodebuild -scheme Core -destination "$DESTINATION" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"} build-for-testing)
+fi
 
 # SwiftLint tourne ici : check-architecture.sh n'est lancé que sur le runner Linux (job android).
 if command -v swiftlint >/dev/null 2>&1; then
