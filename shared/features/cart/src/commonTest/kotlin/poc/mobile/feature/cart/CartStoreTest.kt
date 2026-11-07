@@ -1,7 +1,10 @@
 package poc.mobile.feature.cart
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -70,6 +73,21 @@ class CartStoreTest {
         val store = store()
         repository.add("p2")
         assertEquals(listOf("p2"), store.state.value.lines.map { it.productId })
+    }
+
+    @Test
+    fun concurrentAddsOfSameProductKeepOneLine() = runTest {
+        val slowRepository = InMemoryCartRepository(SlowCatalogApi)
+        listOf(launch { slowRepository.add("p1") }, launch { slowRepository.add("p1") }).joinAll()
+        assertEquals(listOf(CartLine("p1", "Café", 450, 2)), slowRepository.lines.value)
+    }
+
+    /** Catalogue qui suspend, comme un vrai backend. */
+    private object SlowCatalogApi : CatalogApi {
+        override suspend fun findProduct(id: String): ProductSummary? {
+            delay(100)
+            return FakeCatalogApi.findProduct(id)
+        }
     }
 
     private object FakeCatalogApi : CatalogApi {
