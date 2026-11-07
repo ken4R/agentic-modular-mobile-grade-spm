@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -69,7 +70,14 @@ private fun AppTabBar(navController: NavHostController) {
         tabs.forEach { (route, label) ->
             NavigationBarItem(
                 selected = entry?.destination?.route == route,
-                onClick = { navController.navigate(route) { launchSingleTop = true } },
+                onClick = {
+                    // Onglets : une seule entrée par onglet dans la pile, retour vers l'onglet de départ.
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
                 icon = {},
                 label = { Text(label) },
             )
