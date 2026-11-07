@@ -20,7 +20,7 @@ command -v xcodebuild >/dev/null || { echo "xcodebuild absent : build iOS imposs
 ./gradlew :shared:assembleSharedDebugXCFramework --console=plain
 # Diagnostic SKIE (docs/frictions.md, onEnum) : signatures `onEnum(of:)` générées, lisibles dans les logs CI.
 echo "--- SKIE : onEnum générés ---"
-grep -rhoE "func onEnum<[^(]*\(of sealed: [^)]*\)" shared/build/skie --include='*.swift' 2>/dev/null | sort -u | head -20 || true
+grep -rhoE "func onEnum<[^(]*\(of sealed: [^)]*\)" shared/build/skie --include='*.swift' 2>/dev/null | sort -u | head -40 || true
 # Projet généré par XcodeGen depuis ios/project.yml.
 xcodebuild -project ios/App.xcodeproj -scheme App -configuration Debug -destination "$DESTINATION" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"} build
 

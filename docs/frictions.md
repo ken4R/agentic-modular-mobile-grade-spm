@@ -49,7 +49,7 @@
 
 ## 2026-11-04 — Semaine 1, étape 8 (feature auth)
 
-- **SKIE / sealed interface (ouvert)** : `onEnum(of:)` introuvable pour `AuthIntent` (sealed interface d'un module
+- **SKIE / sealed interface (résolu le 2026-11-07, voir plus bas)** : `onEnum(of:)` introuvable pour `AuthIntent` (sealed interface d'un module
   de feature exporté), alors qu'il fonctionne pour `Outcome` (sealed class de core). 2 échecs consécutifs
   (tableau d'existentiels, puis fonction générique typée concrètement) → arrêt selon AGENTS.md.
   Hypothèse non vérifiée : SKIE ne génère pas l'interop sealed pour ce cas ; le Swift généré (`shared/build/`)
@@ -90,3 +90,13 @@
   (CI sans XcodeGen) : les entrées pbxproj (6 sections) ont été écrites à la main, en miroir de `project.yml`.
 - **Tests UI** : Android instrumentés et `xcodebuild test` des packages non exécutés (ni émulateur, ni CI pour eux) ;
   écrits sur le modèle d'auth, à lancer en local.
+
+## 2026-11-07 — Semaine 1, point SKIE onEnum (agent cloud, PR #5)
+
+- **SKIE / sealed interface (résolu)** : option B. SKIE 0.10.6 génère bien `onEnum(of:)` pour les sealed interfaces
+  des modules de feature (`AuthIntent`, `CatalogIntent`, `CartIntent`, signatures relevées dans les logs du job `ios`).
+  `IntentContractTests` fait un `switch` exhaustif sur les trois et compile (`TEST BUILD SUCCEEDED`, Xcode 16.4).
+  Cause de l'échec de l'étape 8 non reproduite : probablement l'appel côté test, pas SKIE. Option A (`sealed class`) inutile.
+- **Tests de contrat en CI** : `build-ios.sh` compile `ios/Core` en `build-for-testing` (CI seulement, destination
+  générique) : l'exhaustivité est vérifiée, les tests ne sont pas exécutés (pas de simulateur garanti). ~+10 s sur le job.
+- **Tokens agent** : ~60k tokens de contexte pour l'étape (lecture frictions/AGENTS.md, test, script, PR, logs CI).
