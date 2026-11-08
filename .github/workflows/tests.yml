@@ -1,6 +1,8 @@
 # Tests UI des deux plateformes (Android instrumentés, Swift des packages SPM).
 # Workflow séparé de ci.yml : ci.yml reste commun aux trois POC pour garder la métrique « durée pipeline PR »
 # comparable. Ces jobs sont plus lents (émulateur, simulateur) et mesurés à part.
+# Build par impact (semaine 2) : le job `impact` calcule les modules touchés (scripts/affected-modules.sh) ;
+# les jobs lents ne tournent que si leur plateforme est impactée, et seulement sur les modules impactés.
 name: tests
 on:
   pull_request:
@@ -10,7 +12,35 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  impact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      android: ${{ steps.affected.outputs.android }}
+      android_test_tasks: ${{ steps.affected.outputs.android_test_tasks }}
+      ios: ${{ steps.affected.outputs.ios }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x scripts/*.sh
+      - name: Modules impactés
+        id: affected
+        env:
+          # PR : base de la PR ; push : commit précédent (vide ou 000… au premier push → tout est impacté).
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          ./scripts/affected-modules.sh --base "$BASE" --format github > "$RUNNER_TEMP/affected.txt"
+          cat "$RUNNER_TEMP/affected.txt" | tee -a "$GITHUB_OUTPUT"
+          { echo '### Build par impact'; echo '```'; cat "$RUNNER_TEMP/affected.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Tests unitaires ciblés
+        if: steps.affected.outputs.tasks != ''
+        run: ./gradlew ${{ steps.affected.outputs.tasks }} --console=plain
   android-instrumented:
+    needs: impact
+    if: needs.impact.outputs.android == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -35,7 +65,7 @@ jobs:
           target: google_apis
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: ./scripts/test-android-instrumented.sh
+          script: ./scripts/test-android-instrumented.sh ${{ needs.impact.outputs.android_test_tasks }}
       - name: Rapports de tests
         if: failure()
         uses: actions/upload-artifact@v4
@@ -43,6 +73,8 @@ jobs:
           name: android-instrumented-reports
           path: android/**/build/reports/androidTests/
   ios-tests:
+    needs: impact
+    if: needs.impact.outputs.ios == 'true'
     runs-on: macos-15
     timeout-minutes: 45
     steps:
