@@ -13,7 +13,9 @@ Lis `AGENTS.md` avant toute action.
 - Tests KMP : `./gradlew allTests` (tous les modules ; `:shared` est le parapluie iOS, sans tests)
 - XCFramework : `./gradlew :shared:assembleSharedDebugXCFramework` (debug, utilisé par `build-ios.sh`) ou `:shared:assembleSharedXCFramework` (debug + release)
 - iOS : `xcodebuild -scheme App -destination 'platform=iOS Simulator,name=iPhone 16' build`
-- Modules impactés : `./scripts/affected-modules.sh`
+- Modules impactés : `./scripts/affected-modules.sh [--base origin/main] [--format list|tasks|github]`
+- Caches Gradle (configuration cache + cache distant) : `./scripts/check-gradle-caches.sh`
+- Cache distant : variables `GRADLE_REMOTE_CACHE_URL`, `_USERNAME`, `_PASSWORD` (`settings.gradle.kts`)
 
 ### Interdits
 - Ne jamais créer de fichier `BUILD`, `BUILD.bazel`, `MODULE.bazel`, `WORKSPACE` ou `.bzl`.

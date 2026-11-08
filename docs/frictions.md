@@ -111,3 +111,27 @@
   KVM) et `ios-tests` (macos-15, `scripts/test-ios.sh`). `swift test` impossible : packages iOS-only et XCFramework
   limité à `iosSimulatorArm64`, donc `xcodebuild test` sur le premier iPhone simulé disponible (UDID, pas de nom codé en dur).
 - **Validation** : impossible en local (ni SDK Android, ni Xcode) ; la CI GitHub fait foi.
+
+## 2026-11-08 — Semaine 2, optimisations Gradle/Xcode (agent cloud)
+
+- **Validation locale impossible** : `./gradlew help` échoue (Maven Central en 429 sur trove4j, Google Maven
+  bloqué). Tout est validé par la CI GitHub : `tests/impact`, `perf/gradle-caches`, `bench/grille`.
+- **`gradle-dependency-graph`** : le plugin vanniktech (0.8.0, juin 2022) n'est plus maintenu et dessine en
+  Graphviz. Remplacé par une tâche `projectGraph` dans `build-logic` (ADR-0004).
+- **`ci.yml` intouchable** : le cache DerivedData et le cache distant ne peuvent pas profiter au job `ios` de
+  `ci.yml` sans changer le template (étape `actions/cache` et variables `GRADLE_REMOTE_CACHE_*`). Appliqué
+  aux workflows du POC (`tests.yml`, `perf.yml`). À reporter au template si la mesure le justifie.
+- **DerivedData et mtimes** : un checkout neuf donne de nouvelles dates à tous les fichiers ; Xcode recompile
+  donc les sources Swift même avec DerivedData restauré. Le gain attendu vient surtout du ModuleCache et de la
+  résolution SPM. `Shared.xcframework` est de toute façon reconstruit par Gradle. À mesurer sur la durée du job.
+- **Kotlin/Native** : `~/.konan` (toolchain et caches K/N) n'est pas mis en cache par `setup-gradle` ; ajouté
+  au job `ios-tests`.
+- **Bench et cache distant** : `run-all.sh` enchaîne builds à froid et ratio de cache avec le même environnement.
+  Un cache distant actif rendrait les runs 2 et 3 « à froid » chauds. `bench.yml` lance donc `run-all.sh` sans
+  cache distant, puis remesure `cache-hit.sh` avec le cache distant rempli (`cache_hit_pct_local_only` garde la
+  valeur d'origine).
+- **`bench/results-*.json` ignoré par git** (`.gitignore` du socle) alors que la skill `run-benchmarks` demande de
+  le commiter : à trancher dans le template.
+- **Tokens** : ~85k tokens de contexte pour l'étape (lecture plan/AGENTS.md/scripts, écriture, PR) ;
+  `/cost` indisponible en session cloud. Interventions humaines : 0.
+
