@@ -1,0 +1,29 @@
+# Optimisations de l'approche C (semaine 2), hors de ci.yml qui reste commun aux trois POC.
+# - gradle-caches : configuration cache stocké puis réutilisé, cache de build distant HTTP (scripts/check-gradle-caches.sh).
+name: perf
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  gradle-caches:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      # Lecture seule : ce job purge et remplit son cache local exprès, il ne doit pas écraser celui des autres jobs.
+      - uses: gradle/actions/setup-gradle@v4
+        with: { cache-read-only: true }
+      - run: chmod +x scripts/*.sh
+      - name: Configuration cache et cache distant
+        run: ./scripts/check-gradle-caches.sh | tee "$RUNNER_TEMP/caches.txt"
+      - name: Résumé
+        if: always()
+        run: |
+          { echo '### Caches Gradle'; echo '```'; cat "$RUNNER_TEMP/caches.txt" 2>/dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

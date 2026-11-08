@@ -16,9 +16,29 @@ dependencyResolutionManagement {
     }
 }
 
-// Cache local seul en semaine 1 ; le cache distant arrive en semaine 2 (plan-action §2).
+// Cache local toujours actif ; cache distant HTTP (plan-action §2, semaine 2) si GRADLE_REMOTE_CACHE_URL est défini.
+// Écriture seulement en CI (ou GRADLE_REMOTE_CACHE_PUSH=true) : les postes de dev lisent, la CI remplit.
+// HTTP en clair accepté uniquement sur localhost (serveur de test scripts/http-build-cache.py).
+val remoteCacheUrl = providers.environmentVariable("GRADLE_REMOTE_CACHE_URL").orNull
+val remoteCachePush = providers.environmentVariable("GRADLE_REMOTE_CACHE_PUSH")
+    .orElse(providers.environmentVariable("CI")).orNull == "true"
+val remoteCacheUser = providers.environmentVariable("GRADLE_REMOTE_CACHE_USERNAME").orNull
+val remoteCachePassword = providers.environmentVariable("GRADLE_REMOTE_CACHE_PASSWORD").orNull
 buildCache {
     local { isEnabled = true }
+    if (!remoteCacheUrl.isNullOrBlank()) {
+        remote<HttpBuildCache> {
+            url = uri(remoteCacheUrl)
+            isAllowInsecureProtocol = url.host in setOf("localhost", "127.0.0.1")
+            isPush = remoteCachePush
+            if (remoteCacheUser != null) {
+                credentials {
+                    username = remoteCacheUser
+                    password = remoteCachePassword
+                }
+            }
+        }
+    }
 }
 
 rootProject.name = "agentic-modular-mobile-grade-spm"
