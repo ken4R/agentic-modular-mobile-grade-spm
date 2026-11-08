@@ -30,7 +30,11 @@ run() {  # run <n> : lance le build, garde le log, s'arrête au premier échec
   grep -iE "configuration cache|actionable tasks" "$log" || true
 }
 expect() {  # expect <n> <motif> <message>
-  grep -qE "$2" "$WORK/run-$1.log" || { echo "ÉCHEC : $3" >&2; exit 1; }
+  grep -qE "$2" "$WORK/run-$1.log" && return 0
+  echo "ÉCHEC : $3" >&2
+  grep -iE "calculating task graph|configuration cache|reus|invalid|changed" "$WORK/run-$1.log" | head -20 >&2
+  head -15 "$WORK/run-$1.log" >&2
+  exit 1
 }
 
 echo "== 1. build initial"
