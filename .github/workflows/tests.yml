@@ -10,7 +10,8 @@ on:
     branches: [main]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Annulation réservée aux PR : chaque push sur main garde son run (historique de mesures complet).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   impact:
     runs-on: ubuntu-latest
@@ -104,3 +105,9 @@ jobs:
         env:
           DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData
         run: ./scripts/test-ios.sh
+      - name: Logs xcodebuild
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-tests-logs
+          path: ${{ runner.temp }}/ios-tests/

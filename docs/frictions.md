@@ -110,7 +110,10 @@
   « durée pipeline PR » comparable). Jobs `android-instrumented` (reactivecircus/android-emulator-runner, API 34 x86_64,
   KVM) et `ios-tests` (macos-15, `scripts/test-ios.sh`). `swift test` impossible : packages iOS-only et XCFramework
   limité à `iosSimulatorArm64`, donc `xcodebuild test` sur le premier iPhone simulé disponible (UDID, pas de nom codé en dur).
-- **Validation** : impossible en local (ni SDK Android, ni Xcode) ; la CI GitHub fait foi.
+- **Validation** : impossible en local (ni SDK Android, ni Xcode) ; la CI GitHub fait foi. Run de la PR #6 :
+  `android-instrumented` 6 tests passés (2 par feature) en ~3,5 min ; `ios-tests` 12 tests passés (Core 7, Auth 2,
+  Cart 2, Catalog 1) en ~14 min, dont ~2 à 4 min de compilation par package (sans cache DerivedData).
+- **Tokens agent** : non relevé à l'étape ; ~45k tokens de contexte pour la relecture indépendante (diff, logs CI).
 
 ## 2026-11-08 — Semaine 2, optimisations Gradle/Xcode (agent cloud)
 
@@ -139,3 +142,11 @@
   crée au 1er build. Touche aussi `ci.yml` (build Android puis tests KMP dans le même job). `check-gradle-caches.sh`
   crée le dossier d'avance ; à reporter au template (étape ou script commun) si le gain est mesuré.
 
+## 2026-11-08 — Suivi de la relecture de `tests.yml` (agent cloud)
+
+- **Runtime simulateur** : `test-ios.sh` triait les runtimes par ordre lexicographique (`iOS-18-6` avant
+  `iOS-18-10`) ; tri numérique sur la version.
+- **Logs iOS** : les logs `xcodebuild` complets (`$RUNNER_TEMP/ios-tests/`) sont uploadés en artefact en cas d'échec,
+  comme les rapports Android.
+- **`cancel-in-progress`** : réservé aux PR, pour que chaque push sur `main` garde son run.
+- **Validation** : impossible en local (ni Xcode ni SDK Android) ; tri vérifié en Python sur un JSON `simctl` factice.
