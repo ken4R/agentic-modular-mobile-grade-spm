@@ -26,7 +26,8 @@ run() {  # run <n> : lance le build, garde le log, s'arrête au premier échec
   if ! ./gradlew "${TASKS[@]}" --console=plain >"$log" 2>&1; then
     echo "échec du build $1 :" >&2; grep -E "FAILED|What went wrong|problem" -A5 "$log" | head -60 >&2; exit 1
   fi
-  grep -E "Configuration cache|actionable tasks" "$log" || true
+  # -i : la raison d'une invalidation s'écrit « configuration cache cannot be reused because … ».
+  grep -iE "configuration cache|actionable tasks" "$log" || true
 }
 expect() {  # expect <n> <motif> <message>
   grep -qE "$2" "$WORK/run-$1.log" || { echo "ÉCHEC : $3" >&2; exit 1; }

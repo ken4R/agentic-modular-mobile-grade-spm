@@ -22,7 +22,9 @@ jobs:
         with: { cache-read-only: true }
       - run: chmod +x scripts/*.sh
       - name: Configuration cache et cache distant
-        run: ./scripts/check-gradle-caches.sh | tee "$RUNNER_TEMP/caches.txt"
+        # shell bash explicite : active pipefail, sinon `tee` masque l'échec du script.
+        shell: bash
+        run: ./scripts/check-gradle-caches.sh 2>&1 | tee "$RUNNER_TEMP/caches.txt"
       - name: Résumé
         if: always()
         run: |

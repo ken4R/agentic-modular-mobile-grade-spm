@@ -31,6 +31,7 @@ jobs:
           [ -n "${ANDROID_HOME:-}" ] || { echo "ANDROID_HOME absent : pas de SDK Android sur ce runner" >&2; exit 1; }
           echo "ANDROID_HOME=$ANDROID_HOME"; xcodebuild -version
       - name: Grille complète (run-all.sh)
+        shell: bash  # pipefail : `tee` ne doit pas masquer un échec
         run: ./scripts/bench/run-all.sh | tee "$RUNNER_TEMP/run-all.txt"
       - name: Ratio de cache avec cache distant
         run: |
