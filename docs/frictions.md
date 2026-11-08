@@ -134,4 +134,8 @@
   le commiter : à trancher dans le template.
 - **Tokens** : ~85k tokens de contexte pour l'étape (lecture plan/AGENTS.md/scripts, écriture, PR) ;
   `/cost` indisponible en session cloud. Interventions humaines : 0.
+- **Configuration cache et AGP sur runner neuf** : le 2e build d'un même job ne réutilise pas le configuration cache
+  (« file system entry '~/.config/.android/cache' has been created ») : AGP teste ce dossier à la configuration et le
+  crée au 1er build. Touche aussi `ci.yml` (build Android puis tests KMP dans le même job). `check-gradle-caches.sh`
+  crée le dossier d'avance ; à reporter au template (étape ou script commun) si le gain est mesuré.
 

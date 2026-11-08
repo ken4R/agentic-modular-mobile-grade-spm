@@ -20,6 +20,10 @@ if [ -z "${GRADLE_REMOTE_CACHE_URL:-}" ]; then
   export GRADLE_REMOTE_CACHE_URL="http://127.0.0.1:$PORT/cache/"
 fi
 export GRADLE_REMOTE_CACHE_PUSH=true
+# AGP teste à la configuration l'existence de ~/.config/.android/cache et le crée au 1er build : sur un runner
+# neuf, le 2e build invalide alors le configuration cache (« file system entry … has been created »). On le crée
+# d'avance, comme sur un poste de dev déjà utilisé (docs/frictions.md).
+mkdir -p "${ANDROID_USER_HOME:-$HOME/.config/.android}/cache"
 
 run() {  # run <n> : lance le build, garde le log, s'arrête au premier échec
   local log="$WORK/run-$1.log"
