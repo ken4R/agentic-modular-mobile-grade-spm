@@ -3,6 +3,7 @@
 # Les packages sont iOS-only et Shared.xcframework n'a que la slice iosSimulatorArm64 : `swift test` (macOS)
 # est impossible, on passe par `xcodebuild test` sur un simulateur arm64 réel (pas de destination générique).
 # IOS_DESTINATION force la destination ; sinon le premier iPhone disponible du runner est choisi.
+# DERIVED_DATA_PATH : DerivedData dans un dossier choisi (un sous-dossier par package), mis en cache par la CI.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 command -v xcodebuild >/dev/null || { echo "xcodebuild absent : tests iOS impossibles sur cette machine" >&2; exit 1; }
@@ -40,7 +41,10 @@ for pkg in ios/Core ios/Features/*/; do
   log="$LOG_DIR/$(basename "$pkg").log"
   echo "--- $pkg (schéma $scheme, log complet : $log) ---"
   rc=0
-  (cd "$pkg" && xcodebuild test -scheme "$scheme" -destination "$DESTINATION" ARCHS=arm64) >"$log" 2>&1 || rc=$?
+  DD_ARGS=()
+  [ -n "${DERIVED_DATA_PATH:-}" ] && DD_ARGS=(-derivedDataPath "$DERIVED_DATA_PATH/$(basename "$pkg")")
+  (cd "$pkg" && xcodebuild test -scheme "$scheme" -destination "$DESTINATION" ${DD_ARGS[@]+"${DD_ARGS[@]}"} ARCHS=arm64) \
+    >"$log" 2>&1 || rc=$?
   grep -E "error:|Test Case .* (passed|failed)|Executed [0-9]+ test|\*\* TEST" "$log" | head -80 || true
   [ "$rc" -eq 0 ] || { echo "ÉCHEC $pkg (exit $rc)"; tail -30 "$log"; status=1; }
 done

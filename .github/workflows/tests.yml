@@ -83,5 +83,24 @@ jobs:
         with: { distribution: temurin, java-version: 21 }
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x scripts/*.sh
+      - name: Version de Xcode (clé de cache)
+        id: xcode
+        run: echo "version=$(xcodebuild -version | tr '\n' ' ' | tr -cs 'A-Za-z0-9.' '-')" >> "$GITHUB_OUTPUT"
+      # Toolchain et caches Kotlin/Native (~/.konan) : non couverts par setup-gradle, retéléchargés sinon.
+      - name: Cache Kotlin/Native
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      # DerivedData des packages SPM (semaine 2) : clé exacte sur les sources Swift, sinon le plus récent
+      # de la même version de Xcode (restore-keys) pour un build incrémental.
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/DerivedData
+          key: dd-tests-${{ steps.xcode.outputs.version }}-${{ hashFiles('ios/**/*.swift', 'ios/**/Package.resolved', 'shared/**/*.kt') }}
+          restore-keys: dd-tests-${{ steps.xcode.outputs.version }}-
       - name: Tests Swift (packages SPM, simulateur)
+        env:
+          DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData
         run: ./scripts/test-ios.sh
