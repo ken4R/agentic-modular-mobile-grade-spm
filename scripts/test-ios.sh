@@ -17,7 +17,9 @@ else
   UDID=$(xcrun simctl list devices available -j \
     | python3 -c 'import json,sys
 d=json.load(sys.stdin)["devices"]
-ids=[x["udid"] for r,l in sorted(d.items(),reverse=True) if "iOS" in r for x in l if x["name"].startswith("iPhone")]
+# Tri numérique sur la version du runtime (…SimRuntime.iOS-18-10 > iOS-18-6), plus récent en premier.
+ver=lambda r: tuple(int(p) for p in r.rsplit("iOS-",1)[1].split("-") if p.isdigit())
+ids=[x["udid"] for r,l in sorted((i for i in d.items() if "iOS-" in i[0]),key=lambda i: ver(i[0]),reverse=True) for x in l if x["name"].startswith("iPhone")]
 print(ids[0] if ids else "")')
   [ -n "$UDID" ] || { echo "aucun simulateur iPhone disponible" >&2; xcrun simctl list devices available; exit 1; }
   DESTINATION="id=$UDID"
