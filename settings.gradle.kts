@@ -28,8 +28,9 @@ buildCache {
     local { isEnabled = true }
     if (!remoteCacheUrl.isNullOrBlank()) {
         remote<HttpBuildCache> {
-            url = uri(remoteCacheUrl)
-            isAllowInsecureProtocol = url.host in setOf("localhost", "127.0.0.1")
+            val remoteUri = uri(remoteCacheUrl)
+            url = remoteUri
+            isAllowInsecureProtocol = remoteUri.host in setOf("localhost", "127.0.0.1")
             isPush = remoteCachePush
             if (remoteCacheUser != null) {
                 credentials {
