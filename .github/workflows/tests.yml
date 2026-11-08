@@ -1,0 +1,55 @@
+# Tests UI des deux plateformes (Android instrumentés, Swift des packages SPM).
+# Workflow séparé de ci.yml : ci.yml reste commun aux trois POC pour garder la métrique « durée pipeline PR »
+# comparable. Ces jobs sont plus lents (émulateur, simulateur) et mesurés à part.
+name: tests
+on:
+  pull_request:
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  android-instrumented:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Activer KVM (accélération de l'émulateur)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - run: chmod +x scripts/*.sh
+      # Compilation des APK de test hors émulateur : l'émulateur ne démarre que pour l'exécution.
+      - name: Compiler les APK de test
+        run: ./gradlew assembleDebugAndroidTest --console=plain
+      - name: Tests instrumentés (émulateur API 34)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: ./scripts/test-android-instrumented.sh
+      - name: Rapports de tests
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-instrumented-reports
+          path: android/**/build/reports/androidTests/
+  ios-tests:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x scripts/*.sh
+      - name: Tests Swift (packages SPM, simulateur)
+        run: ./scripts/test-ios.sh

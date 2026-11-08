@@ -100,3 +100,14 @@
 - **Tests de contrat en CI** : `build-ios.sh` compile `ios/Core` en `build-for-testing` (CI seulement, destination
   générique) : l'exhaustivité est vérifiée, les tests ne sont pas exécutés (pas de simulateur garanti). ~+10 s sur le job.
 - **Tokens agent** : ~60k tokens de contexte pour l'étape (lecture frictions/AGENTS.md, test, script, PR, logs CI).
+
+## 2026-11-08 — Tests UI des deux plateformes en CI (agent cloud)
+
+- **Constat** : `ci.yml` ne lançait ni `connectedAndroidTest` (aucun émulateur sur le job `android`) ni
+  `xcodebuild test` (le job `ios` fait `build` + `build-for-testing` de `ios/Core` seulement, destination générique).
+  Les tests `AuthUITests`/`CatalogUITests`/`CartUITests`, `ContractTests` et les `androidTest` n'étaient jamais exécutés.
+- **Choix** : workflow séparé `.github/workflows/tests.yml` pour ne pas toucher `ci.yml` (commun aux POC, métrique
+  « durée pipeline PR » comparable). Jobs `android-instrumented` (reactivecircus/android-emulator-runner, API 34 x86_64,
+  KVM) et `ios-tests` (macos-15, `scripts/test-ios.sh`). `swift test` impossible : packages iOS-only et XCFramework
+  limité à `iosSimulatorArm64`, donc `xcodebuild test` sur le premier iPhone simulé disponible (UDID, pas de nom codé en dur).
+- **Validation** : impossible en local (ni SDK Android, ni Xcode) ; la CI GitHub fait foi.
