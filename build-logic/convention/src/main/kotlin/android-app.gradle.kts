@@ -2,6 +2,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import convention.TARGET_SDK
 import convention.configureAndroidCompose
 import convention.configureDetekt
+import convention.configureProjectGraph
 
 plugins {
     id("com.android.application")
@@ -20,3 +21,4 @@ extensions.configure<ApplicationExtension> {
 }
 
 configureDetekt()
+configureProjectGraph("testDebugUnitTest")

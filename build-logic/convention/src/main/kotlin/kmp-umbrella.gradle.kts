@@ -1,5 +1,6 @@
 import convention.configureDetekt
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import convention.configureProjectGraph
 
 // Module parapluie : agrège les modules KMP en un seul framework iOS, exporté vers Swift via SKIE.
 // SKIE est chargé ici, avec le plugin Kotlin, pour partager le même classloader.
@@ -14,3 +15,4 @@ extensions.configure<KotlinMultiplatformExtension> {
 }
 
 configureDetekt()
+configureProjectGraph("-")

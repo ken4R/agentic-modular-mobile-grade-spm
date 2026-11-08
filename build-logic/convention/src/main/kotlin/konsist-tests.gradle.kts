@@ -1,6 +1,7 @@
 import convention.JVM_TARGET
 import convention.libs
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import convention.configureProjectGraph
 
 // Tests d'architecture : JVM seul, lancés par `./gradlew :shared:konsist:allTests`.
 plugins {
@@ -31,3 +32,4 @@ tasks.named<Test>("jvmTest") {
         },
     ).withPathSensitivity(PathSensitivity.RELATIVE)
 }
+configureProjectGraph("allTests")
