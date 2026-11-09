@@ -163,8 +163,8 @@
   Android restent à jour et ne lisent pas le cache. Diagnostic impossible sans modifier `scripts/bench/` (socle).
   Valeur retenue : 56 % de tâches servies par le cache distant (`perf/gradle-caches`, Linux, Android + KMP).
   À corriger dans le template (garder le log de `cache-hit.sh`, purger aussi `android/**/build`).
-- **Build par impact observé** : sur la PR #7, `ios-tests` passe de ~14 min (PR #6) à 13 min avec DerivedData et
-  `~/.konan` restaurés à la 2e exécution ; gain faible, comme prévu (mtimes du checkout).
+- **Cache DerivedData** : sur la PR #7, `ios-tests` dure 13 min contre ~14 min sur la PR #6. Gain faible et non
+  attribué (restauration du cache non vérifiée dans les logs), cohérent avec le problème des mtimes du checkout.
 - **Tokens** : ~150k tokens de contexte pour la semaine 2 au total (estimation, `/cost` indisponible).
   Interventions humaines : 0 correction ; 1 choix (bench en 3 runs).
 
