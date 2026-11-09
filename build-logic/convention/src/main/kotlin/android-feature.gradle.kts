@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.LibraryExtension
 import convention.configureAndroidCompose
 import convention.configureDetekt
+import convention.configureProjectGraph
 
 plugins {
     id("com.android.library")
@@ -10,3 +11,4 @@ plugins {
 
 configureAndroidCompose(extensions.getByType<LibraryExtension>())
 configureDetekt()
+configureProjectGraph("testDebugUnitTest")

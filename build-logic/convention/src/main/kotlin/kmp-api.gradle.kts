@@ -1,5 +1,6 @@
 import convention.configureDetekt
 import convention.configureKmpLibrary
+import convention.configureProjectGraph
 
 // Contrats publics uniquement (navigation, événements) : pas de dépendances de test imposées.
 plugins {
@@ -9,3 +10,4 @@ plugins {
 
 configureKmpLibrary()
 configureDetekt()
+configureProjectGraph("allTests")

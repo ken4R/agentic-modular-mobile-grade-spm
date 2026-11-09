@@ -1,0 +1,62 @@
+# Grille de mesure (plan-action §5) sur un runner macOS : seul environnement avec Xcode et SDK Android.
+# Coûteux (~1 h de runner macOS) : lancé à la demande, via « Run workflow » ou le label `bench` sur une PR.
+# scripts/bench/ n'est pas modifié (socle) : run-all.sh tourne tel quel, sans cache distant (builds à froid).
+# Le ratio de cache est ensuite remesuré avec le cache distant HTTP local rempli, comme le prévoit cache-hit.sh.
+name: bench
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: Nombre de runs par mesure (médiane)
+        default: "3"
+  pull_request:
+    types: [labeled]
+jobs:
+  grille:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'bench'
+    runs-on: macos-15
+    timeout-minutes: 150
+    env:
+      BENCH_RUNS: ${{ inputs.runs || '3' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { cache-read-only: true }
+      - name: Outils iOS
+        run: ./scripts/setup-ios-tools.sh
+      - name: SDK Android du runner
+        run: |
+          [ -n "${ANDROID_HOME:-}" ] || { echo "ANDROID_HOME absent : pas de SDK Android sur ce runner" >&2; exit 1; }
+          echo "ANDROID_HOME=$ANDROID_HOME"; xcodebuild -version
+      - name: Grille complète (run-all.sh)
+        shell: bash  # pipefail : `tee` ne doit pas masquer un échec
+        run: ./scripts/bench/run-all.sh | tee "$RUNNER_TEMP/run-all.txt"
+      - name: Ratio de cache avec cache distant
+        run: |
+          python3 scripts/http-build-cache.py 5071 "$RUNNER_TEMP/http-cache" >"$RUNNER_TEMP/cache-server.log" 2>&1 &
+          export GRADLE_REMOTE_CACHE_URL=http://127.0.0.1:5071/cache/
+          for _ in $(seq 1 50); do curl -fs http://127.0.0.1:5071/stats >/dev/null && break; sleep 0.2; done
+          # 1er build : remplit le cache distant ; cache-hit.sh vide les caches locaux puis rebuild.
+          ./scripts/build-android.sh >/dev/null 2>&1; ./scripts/build-ios.sh >/dev/null 2>&1
+          HIT=$(./scripts/bench/cache-hit.sh)
+          echo "cache_hit_pct (cache distant) = $HIT ; serveur : $(curl -fs http://127.0.0.1:5071/stats)"
+          F=$(ls bench/results-*.json | head -1)
+          python3 - "$F" "$HIT" <<'PY'
+          import json, sys
+          f, hit = sys.argv[1], int(sys.argv[2])
+          d = json.load(open(f)); d["cache_hit_pct_local_only"] = d["cache_hit_pct"]; d["cache_hit_pct"] = hit
+          json.dump(d, open(f, "w"), indent=2); print(json.dumps(d, indent=2))
+          PY
+      - name: Résumé
+        if: always()
+        run: |
+          { echo '### Grille de mesure — approche C'; ./scripts/bench/to-markdown.sh bench/results-*.json 2>/dev/null
+            echo; echo '```'; cat bench/results-*.json 2>/dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          cat bench/results-*.json 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bench-results
+          path: bench/results-*.json

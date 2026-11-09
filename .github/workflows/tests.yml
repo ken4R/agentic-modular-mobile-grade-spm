@@ -1,6 +1,8 @@
 # Tests UI des deux plateformes (Android instrumentés, Swift des packages SPM).
 # Workflow séparé de ci.yml : ci.yml reste commun aux trois POC pour garder la métrique « durée pipeline PR »
 # comparable. Ces jobs sont plus lents (émulateur, simulateur) et mesurés à part.
+# Build par impact (semaine 2) : le job `impact` calcule les modules touchés (scripts/affected-modules.sh) ;
+# les jobs lents ne tournent que si leur plateforme est impactée, et seulement sur les modules impactés.
 name: tests
 on:
   pull_request:
@@ -8,9 +10,38 @@ on:
     branches: [main]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Annulation réservée aux PR : chaque push sur main garde son run (historique de mesures complet).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  impact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      android: ${{ steps.affected.outputs.android }}
+      android_test_tasks: ${{ steps.affected.outputs.android_test_tasks }}
+      ios: ${{ steps.affected.outputs.ios }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x scripts/*.sh
+      - name: Modules impactés
+        id: affected
+        env:
+          # PR : base de la PR ; push : commit précédent (vide ou 000… au premier push → tout est impacté).
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          ./scripts/affected-modules.sh --base "$BASE" --format github > "$RUNNER_TEMP/affected.txt"
+          cat "$RUNNER_TEMP/affected.txt" | tee -a "$GITHUB_OUTPUT"
+          { echo '### Build par impact'; echo '```'; cat "$RUNNER_TEMP/affected.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Tests unitaires ciblés
+        if: steps.affected.outputs.tasks != ''
+        run: ./gradlew ${{ steps.affected.outputs.tasks }} --console=plain
   android-instrumented:
+    needs: impact
+    if: needs.impact.outputs.android == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -35,7 +66,7 @@ jobs:
           target: google_apis
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: ./scripts/test-android-instrumented.sh
+          script: ./scripts/test-android-instrumented.sh ${{ needs.impact.outputs.android_test_tasks }}
       - name: Rapports de tests
         if: failure()
         uses: actions/upload-artifact@v4
@@ -43,6 +74,8 @@ jobs:
           name: android-instrumented-reports
           path: android/**/build/reports/androidTests/
   ios-tests:
+    needs: impact
+    if: needs.impact.outputs.ios == 'true'
     runs-on: macos-15
     timeout-minutes: 45
     steps:
@@ -51,5 +84,30 @@ jobs:
         with: { distribution: temurin, java-version: 21 }
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x scripts/*.sh
+      - name: Version de Xcode (clé de cache)
+        id: xcode
+        run: echo "version=$(xcodebuild -version | tr '\n' ' ' | tr -cs 'A-Za-z0-9.' '-')" >> "$GITHUB_OUTPUT"
+      # Toolchain et caches Kotlin/Native (~/.konan) : non couverts par setup-gradle, retéléchargés sinon.
+      - name: Cache Kotlin/Native
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      # DerivedData des packages SPM (semaine 2) : clé exacte sur les sources Swift, sinon le plus récent
+      # de la même version de Xcode (restore-keys) pour un build incrémental.
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/DerivedData
+          key: dd-tests-${{ steps.xcode.outputs.version }}-${{ hashFiles('ios/**/*.swift', 'ios/**/Package.resolved', 'shared/**/*.kt') }}
+          restore-keys: dd-tests-${{ steps.xcode.outputs.version }}-
       - name: Tests Swift (packages SPM, simulateur)
+        env:
+          DERIVED_DATA_PATH: ${{ runner.temp }}/DerivedData
         run: ./scripts/test-ios.sh
+      - name: Logs xcodebuild
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-tests-logs
+          path: ${{ runner.temp }}/ios-tests/

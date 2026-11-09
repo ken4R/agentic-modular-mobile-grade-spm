@@ -110,4 +110,61 @@
   « durée pipeline PR » comparable). Jobs `android-instrumented` (reactivecircus/android-emulator-runner, API 34 x86_64,
   KVM) et `ios-tests` (macos-15, `scripts/test-ios.sh`). `swift test` impossible : packages iOS-only et XCFramework
   limité à `iosSimulatorArm64`, donc `xcodebuild test` sur le premier iPhone simulé disponible (UDID, pas de nom codé en dur).
-- **Validation** : impossible en local (ni SDK Android, ni Xcode) ; la CI GitHub fait foi.
+- **Validation** : impossible en local (ni SDK Android, ni Xcode) ; la CI GitHub fait foi. Run de la PR #6 :
+  `android-instrumented` 6 tests passés (2 par feature) en ~3,5 min ; `ios-tests` 12 tests passés (Core 7, Auth 2,
+  Cart 2, Catalog 1) en ~14 min, dont ~2 à 4 min de compilation par package (sans cache DerivedData).
+- **Tokens agent** : non relevé à l'étape ; ~45k tokens de contexte pour la relecture indépendante (diff, logs CI).
+
+## 2026-11-08 — Semaine 2, optimisations Gradle/Xcode (agent cloud)
+
+- **Validation locale impossible** : `./gradlew help` échoue (Maven Central en 429 sur trove4j, Google Maven
+  bloqué). Tout est validé par la CI GitHub : `tests/impact`, `perf/gradle-caches`, `bench/grille`.
+- **`gradle-dependency-graph`** : le plugin vanniktech (0.8.0, juin 2022) n'est plus maintenu et dessine en
+  Graphviz. Remplacé par une tâche `projectGraph` dans `build-logic` (ADR-0004).
+- **`ci.yml` intouchable** : le cache DerivedData et le cache distant ne peuvent pas profiter au job `ios` de
+  `ci.yml` sans changer le template (étape `actions/cache` et variables `GRADLE_REMOTE_CACHE_*`). Appliqué
+  aux workflows du POC (`tests.yml`, `perf.yml`). À reporter au template si la mesure le justifie.
+- **DerivedData et mtimes** : un checkout neuf donne de nouvelles dates à tous les fichiers ; Xcode recompile
+  donc les sources Swift même avec DerivedData restauré. Le gain attendu vient surtout du ModuleCache et de la
+  résolution SPM. `Shared.xcframework` est de toute façon reconstruit par Gradle. À mesurer sur la durée du job.
+- **Kotlin/Native** : `~/.konan` (toolchain et caches K/N) n'est pas mis en cache par `setup-gradle` ; ajouté
+  au job `ios-tests`.
+- **Bench et cache distant** : `run-all.sh` enchaîne builds à froid et ratio de cache avec le même environnement.
+  Un cache distant actif rendrait les runs 2 et 3 « à froid » chauds. `bench.yml` lance donc `run-all.sh` sans
+  cache distant, puis remesure `cache-hit.sh` avec le cache distant rempli (`cache_hit_pct_local_only` garde la
+  valeur d'origine).
+- **`bench/results-*.json` ignoré par git** (`.gitignore` du socle) alors que la skill `run-benchmarks` demande de
+  le commiter : à trancher dans le template.
+- **Tokens** : ~85k tokens de contexte pour l'étape (lecture plan/AGENTS.md/scripts, écriture, PR) ;
+  `/cost` indisponible en session cloud. Interventions humaines : 0.
+- **Configuration cache et AGP sur runner neuf** : le 2e build d'un même job ne réutilise pas le configuration cache
+  (« file system entry '~/.config/.android/cache' has been created ») : AGP teste ce dossier à la configuration et le
+  crée au 1er build. Touche aussi `ci.yml` (build Android puis tests KMP dans le même job). `check-gradle-caches.sh`
+  crée le dossier d'avance ; à reporter au template (étape ou script commun) si le gain est mesuré.
+
+## 2026-11-08 — Suivi de la relecture de `tests.yml` (agent cloud)
+
+- **Runtime simulateur** : `test-ios.sh` triait les runtimes par ordre lexicographique (`iOS-18-6` avant
+  `iOS-18-10`) ; tri numérique sur la version.
+- **Logs iOS** : les logs `xcodebuild` complets (`$RUNNER_TEMP/ios-tests/`) sont uploadés en artefact en cas d'échec,
+  comme les rapports Android.
+- **`cancel-in-progress`** : réservé aux PR, pour que chaque push sur `main` garde son run.
+- **Validation** : impossible en local (ni Xcode ni SDK Android) ; tri vérifié en Python sur un JSON `simctl` factice.
+
+## 2026-11-08 — Semaine 2, grille de mesure (bench.yml, runner macos-15)
+
+- **Résultats (médiane de 3)** : build à froid Android 51 s, iOS 3 min 38 s, incrémental (Android + iOS) 47 s,
+  592 lignes de configuration, ajout de feature (agent) 7,8 min en moyenne. Durée pipeline PR (`ci.yml`) : 6,2 min,
+  médiane des jobs `ios` de la PR #7. Job complet : 23 min, dont 19 pour `run-all.sh`.
+- **Ratio de cache non mesuré par le bench** : `cache-hit.sh` renvoie 0, avec et sans cache distant. Avec le
+  serveur HTTP local, le serveur ne voit aucune requête pendant `cache-hit.sh` (97 stores, 97 misses, tous au
+  remplissage) : les builds de `cache-hit.sh` ne finissent probablement pas (`|| true`, logs jetés), ou ne
+  consultent pas le cache. Piste : `clear_caches` ne supprime que les `build/` sous `shared/`, donc les tâches
+  Android restent à jour et ne lisent pas le cache. Diagnostic impossible sans modifier `scripts/bench/` (socle).
+  Valeur retenue : 56 % de tâches servies par le cache distant (`perf/gradle-caches`, Linux, Android + KMP).
+  À corriger dans le template (garder le log de `cache-hit.sh`, purger aussi `android/**/build`).
+- **Cache DerivedData** : sur la PR #7, `ios-tests` dure 13 min contre ~14 min sur la PR #6. Gain faible et non
+  attribué (restauration du cache non vérifiée dans les logs), cohérent avec le problème des mtimes du checkout.
+- **Tokens** : ~150k tokens de contexte pour la semaine 2 au total (estimation, `/cost` indisponible).
+  Interventions humaines : 0 correction ; 1 choix (bench en 3 runs).
+

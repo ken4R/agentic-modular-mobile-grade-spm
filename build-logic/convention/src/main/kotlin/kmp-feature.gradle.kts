@@ -1,6 +1,7 @@
 import convention.configureDetekt
 import convention.configureKmpLibrary
 import convention.configureKmpTests
+import convention.configureProjectGraph
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
@@ -10,3 +11,4 @@ plugins {
 configureKmpLibrary()
 configureKmpTests()
 configureDetekt()
+configureProjectGraph("allTests")
