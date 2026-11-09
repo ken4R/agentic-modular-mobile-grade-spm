@@ -1,0 +1,16 @@
+{
+  "approach": "C",
+  "sha": "211ec5e",
+  "date": "2026-11-08",
+  "runs": 3,
+  "cold_android_ms": 51033,
+  "cold_ios_ms": 217722,
+  "incremental_ms": 46849,
+  "cache_hit_pct": null,
+  "config_lines": 592,
+  "feature_add_min_avg": 7.8,
+  "ci_pr_min": 6.2,
+  "ide_score_5": null,
+  "kotlin_upgrade_min": null,
+  "notes": "Runner GitHub macos-15 (bench.yml, run 42512981922). cache_hit_pct : 0 renvoyé par cache-hit.sh, non retenu (aucune requête au cache distant, voir docs/frictions.md). Ratio Gradle mesuré par perf/gradle-caches : 56 %. ci_pr_min : médiane des jobs ios de ci.yml sur la PR #7."
+}

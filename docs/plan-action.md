@@ -128,19 +128,19 @@ Livrable : mesures + estimation du coût annuel de maintien de la règle Kotlin/
 
 | Métrique | Protocole | C | A | B |
 |---|---|---|---|---|
-| Build à froid Android | cache vidé, `time` sur la commande CI, médiane de 3 | | | |
-| Build à froid iOS | idem | | | |
-| Build incrémental | modifier 1 ligne dans `cart`, rebuild, médiane de 3 | | | |
-| Cache hit ratio CI | 2e run sur la même révision | | | |
-| Durée pipeline PR | pipeline complet, médiane de 3 | | | |
+| Build à froid Android | cache vidé, `time` sur la commande CI, médiane de 3 | 51 s | | |
+| Build à froid iOS | idem | 3 min 38 s | | |
+| Build incrémental | modifier 1 ligne dans `cart`, rebuild, médiane de 3 | 47 s (Android + iOS) | | |
+| Cache hit ratio CI | 2e run sur la même révision | 56 % (Gradle, Linux, `perf`) ; bench macOS : non mesuré | | |
+| Durée pipeline PR | pipeline complet, médiane de 3 | 6,2 min (`ci.yml`) | | |
 | Ajout d'une feature (humain) | chrono via skill `new-feature-module` | | | |
-| Ajout d'une feature (agent) | même tâche via Claude Code, succès sans correction (oui/non), durée | | | |
+| Ajout d'une feature (agent) | même tâche via Claude Code, succès sans correction (oui/non), durée | non (corrigé après revue), 7,8 min moy. | | |
 | Montée de version Kotlin | temps vers la version suivante | | | |
 | Expérience IDE | autocomplétion, debug KMP depuis Xcode, note /5 | | | |
-| Lignes de configuration | `wc -l` Gradle + Starlark + `Package.swift` | | | |
-| Tokens consommés (semaine 1) | `/cost` en fin de session, somme notée dans `docs/frictions.md` | | | |
-| Interventions humaines (semaine 1) | nombre de corrections manuelles, journal | | | |
-| Frictions rencontrées | journal qualitatif | | | |
+| Lignes de configuration | `wc -l` Gradle + Starlark + `Package.swift` | 592 | | |
+| Tokens consommés (semaine 1) | `/cost` en fin de session, somme notée dans `docs/frictions.md` | ≥ 257k (estimé, sessions journalisées) | | |
+| Interventions humaines (semaine 1) | nombre de corrections manuelles, journal | 0 | | |
+| Frictions rencontrées | journal qualitatif | voir `docs/frictions.md` | | |
 
 ---
 

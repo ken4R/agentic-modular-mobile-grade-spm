@@ -150,3 +150,21 @@
   comme les rapports Android.
 - **`cancel-in-progress`** : réservé aux PR, pour que chaque push sur `main` garde son run.
 - **Validation** : impossible en local (ni Xcode ni SDK Android) ; tri vérifié en Python sur un JSON `simctl` factice.
+
+## 2026-11-08 — Semaine 2, grille de mesure (bench.yml, runner macos-15)
+
+- **Résultats (médiane de 3)** : build à froid Android 51 s, iOS 3 min 38 s, incrémental (Android + iOS) 47 s,
+  592 lignes de configuration, ajout de feature (agent) 7,8 min en moyenne. Durée pipeline PR (`ci.yml`) : 6,2 min,
+  médiane des jobs `ios` de la PR #7. Job complet : 23 min, dont 19 pour `run-all.sh`.
+- **Ratio de cache non mesuré par le bench** : `cache-hit.sh` renvoie 0, avec et sans cache distant. Avec le
+  serveur HTTP local, le serveur ne voit aucune requête pendant `cache-hit.sh` (97 stores, 97 misses, tous au
+  remplissage) : les builds de `cache-hit.sh` ne finissent probablement pas (`|| true`, logs jetés), ou ne
+  consultent pas le cache. Piste : `clear_caches` ne supprime que les `build/` sous `shared/`, donc les tâches
+  Android restent à jour et ne lisent pas le cache. Diagnostic impossible sans modifier `scripts/bench/` (socle).
+  Valeur retenue : 56 % de tâches servies par le cache distant (`perf/gradle-caches`, Linux, Android + KMP).
+  À corriger dans le template (garder le log de `cache-hit.sh`, purger aussi `android/**/build`).
+- **Build par impact observé** : sur la PR #7, `ios-tests` passe de ~14 min (PR #6) à 13 min avec DerivedData et
+  `~/.konan` restaurés à la 2e exécution ; gain faible, comme prévu (mtimes du checkout).
+- **Tokens** : ~150k tokens de contexte pour la semaine 2 au total (estimation, `/cost` indisponible).
+  Interventions humaines : 0 correction ; 1 choix (bench en 3 runs).
+
