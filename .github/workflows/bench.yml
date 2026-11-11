@@ -1,7 +1,8 @@
 # Grille de mesure (plan-action §5) sur un runner macOS : seul environnement avec Xcode et SDK Android.
 # Coûteux (~1 h de runner macOS) : lancé à la demande, via « Run workflow » ou le label `bench` sur une PR.
 # scripts/bench/ n'est pas modifié (socle) : run-all.sh tourne tel quel, sans cache distant (builds à froid).
-# Le ratio de cache est ensuite remesuré avec le cache distant HTTP local rempli, comme le prévoit cache-hit.sh.
+# Le ratio de cache est ensuite remesuré avec un cache distant HTTP local : cache-hit.sh le remplit (build de
+# remplissage), purge les sorties et les caches locaux, puis mesure. `null` = build en échec, voir bench/logs/.
 name: bench
 on:
   workflow_dispatch:
@@ -38,14 +39,13 @@ jobs:
           python3 scripts/http-build-cache.py 5071 "$RUNNER_TEMP/http-cache" >"$RUNNER_TEMP/cache-server.log" 2>&1 &
           export GRADLE_REMOTE_CACHE_URL=http://127.0.0.1:5071/cache/
           for _ in $(seq 1 50); do curl -fs http://127.0.0.1:5071/stats >/dev/null && break; sleep 0.2; done
-          # 1er build : remplit le cache distant ; cache-hit.sh vide les caches locaux puis rebuild.
-          ./scripts/build-android.sh >/dev/null 2>&1; ./scripts/build-ios.sh >/dev/null 2>&1
-          HIT=$(./scripts/bench/cache-hit.sh)
+          export GRADLE_REMOTE_CACHE_PUSH=true
+          HIT=$(BENCH_LOG_DIR="$PWD/bench/logs/remote" ./scripts/bench/cache-hit.sh)
           echo "cache_hit_pct (cache distant) = $HIT ; serveur : $(curl -fs http://127.0.0.1:5071/stats)"
-          F=$(ls bench/results-*.json | head -1)
+          F=$(ls -t bench/results-*.json | head -1)  # le plus récent : d'anciens résultats sont commités
           python3 - "$F" "$HIT" <<'PY'
           import json, sys
-          f, hit = sys.argv[1], int(sys.argv[2])
+          f, hit = sys.argv[1], json.loads(sys.argv[2])  # entier, ou null si un build a échoué
           d = json.load(open(f)); d["cache_hit_pct_local_only"] = d["cache_hit_pct"]; d["cache_hit_pct"] = hit
           json.dump(d, open(f, "w"), indent=2); print(json.dumps(d, indent=2))
           PY
@@ -59,4 +59,6 @@ jobs:
         if: always()
         with:
           name: bench-results
-          path: bench/results-*.json
+          path: |
+            bench/results-*.json
+            bench/logs/
