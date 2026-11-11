@@ -21,8 +21,12 @@ time_cmd() {
 }
 
 clear_caches() {
-  rm -rf "$HOME/.gradle/caches/build-cache-1" "$ROOT/.gradle" "$ROOT/build" 2>/dev/null || true
-  find "$ROOT" -type d -name build -path '*/shared/*' -prune -exec rm -rf {} + 2>/dev/null || true
+  rm -rf "${GRADLE_USER_HOME:-$HOME/.gradle}/caches/build-cache-1" "$ROOT/.gradle" "$ROOT/build" 2>/dev/null || true
+  # Sorties de tous les modules Gradle (shared et android) : sinon les tâches Android restent à jour,
+  # le build « à froid » Android est biaisé et le ratio de cache ne les compte jamais comme hits.
+  local d; for d in shared android; do
+    [ -d "$ROOT/$d" ] && find "$ROOT/$d" -type d -name build -prune -exec rm -rf {} + 2>/dev/null || true
+  done
   rm -rf "$HOME/Library/Developer/Xcode/DerivedData" 2>/dev/null || true
   command -v bazel >/dev/null 2>&1 && (cd "$ROOT" && bazel clean --expunge >/dev/null 2>&1 || true)
   (cd "$ROOT" && ./gradlew --stop >/dev/null 2>&1 || true)
