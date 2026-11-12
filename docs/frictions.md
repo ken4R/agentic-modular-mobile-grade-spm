@@ -168,3 +168,18 @@
 - **Tokens** : ~150k tokens de contexte pour la semaine 2 au total (estimation, `/cost` indisponible).
   Interventions humaines : 0 correction ; 1 choix (bench en 3 runs).
 
+
+## 2026-11-11 — Synchronisation du socle après la PR #1 du template (agent cloud)
+
+- **Socle** : correctifs reportés dans `mobile-poc-template` (PR #1, mergée le 2026-11-10) puis repris ici :
+  `scripts/bench/` (`cache-hit.sh` avec build de remplissage, logs dans `bench/logs/`, `null` si un build échoue ;
+  `clear_caches` purge `android/**/build`), `check-architecture.sh`, skill `new-feature-module`, `ci.yml`
+  (job `socle`, étape SwiftLint dans le job `ios`), `scripts/test-socle.sh`.
+- **`sync-socle.sh` non utilisable tel quel** : il écrase `docs/plan-action.md` (colonne C de la grille remplie ici)
+  et ne copie ni `ci.yml` ni `test-socle.sh`. Synchronisation faite à la main, `plan-action.md` conservé.
+  À corriger dans le template.
+- **`bench.yml`** : accepte `null`, laisse `cache-hit.sh` remplir le cache distant, prend le fichier de résultats le
+  plus récent (un ancien est commité) et publie `bench/logs/` en artefact.
+- **`build-ios.sh`** : SwiftLint retiré (désormais une étape de `ci.yml`) ; les builds iOS du bench ne lintent plus.
+- **Validation** : `test-socle.sh` en local ; ratio de cache réel à mesurer par un run de `bench.yml` (label `bench`).
+- **Tokens** : ~110k tokens de contexte pour le fil (estimation, `get_session` affiche 0). Interventions humaines : 0.

@@ -29,10 +29,3 @@ xcodebuild -project ios/App.xcodeproj -scheme App -configuration Debug -destinat
 if [ "${CI:-false}" = "true" ]; then
   (cd ios/Core && xcodebuild -scheme Core -destination "$DESTINATION" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"} build-for-testing)
 fi
-
-# SwiftLint tourne ici : check-architecture.sh n'est lancé que sur le runner Linux (job android).
-if command -v swiftlint >/dev/null 2>&1; then
-  swiftlint lint --strict ios
-elif [ "${CI:-false}" = "true" ]; then
-  echo "swiftlint absent en CI : échec (voir setup-ios-tools.sh)" >&2; exit 1
-fi

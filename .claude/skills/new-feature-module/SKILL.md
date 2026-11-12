@@ -29,4 +29,7 @@ puis le fichier `references/<approche>.md` correspondant (A, B ou C) avant d'éc
 
 - La feature ne dépend d'aucune autre feature : uniquement de `core` et des modules `*-api`.
 - Pas de logique dans les écrans : tout passe par le Store.
+- Action vers une autre feature (ex. « ajouter au panier » depuis le catalogue) : l'écran reçoit un callback
+  (`onAddToCart`) fourni par l'app, qui le transmet au Store de la feature cible. Un Store partagé entre écrans
+  est détenu par l'app. La feature source ne dépend pas de la cible, au plus de son module `-api`.
 - Si une étape échoue, ne pas désactiver de test ni de règle : corriger ou documenter dans `docs/frictions.md`.

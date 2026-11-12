@@ -17,7 +17,7 @@ if command -v swiftlint >/dev/null 2>&1; then
 elif [ "${CI:-false}" = "true" ] && [ "$(uname)" = "Darwin" ]; then
   echo "swiftlint absent en CI : échec" >&2; exit 1
 elif [ "${CI:-false}" = "true" ]; then
-  echo "swiftlint : ignoré sur un runner Linux (lancé par build-ios.sh sur le runner macOS)"
+  echo "swiftlint : ignoré sur un runner Linux (lancé par l'étape SwiftLint du job ios en CI)"
 else
   echo "swiftlint absent en local : ignoré (brew install swiftlint)"
 fi

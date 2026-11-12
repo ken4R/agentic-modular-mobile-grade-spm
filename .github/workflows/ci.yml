@@ -6,6 +6,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  # Auto-test des scripts du socle : seul job utile sur le template, rapide dans les POC.
+  socle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/test-socle.sh
   android:
     runs-on: ubuntu-latest
     steps:
@@ -15,10 +21,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x scripts/*.sh scripts/bench/*.sh
       - name: Build Android
+        if: hashFiles('gradlew') != ''  # template sans app : rien à compiler
         run: ./scripts/build-android.sh
       - name: Tests KMP
+        if: hashFiles('gradlew') != ''  # template sans app : rien à compiler
         run: ./scripts/test-shared.sh
       - name: Architecture
+        if: hashFiles('gradlew') != ''  # template sans app : rien à compiler
         run: ./scripts/check-architecture.sh
   ios:
     runs-on: macos-15
@@ -29,6 +38,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x scripts/*.sh scripts/bench/*.sh
       - name: Outils iOS
+        if: hashFiles('gradlew') != ''  # template sans app : rien à compiler
         run: ./scripts/setup-ios-tools.sh
+      # check-architecture.sh tourne sur Linux (job android), où SwiftLint n'existe pas : le lint Swift est ici.
+      - name: SwiftLint
+        if: hashFiles('gradlew') != ''  # template sans app : rien à compiler
+        run: if [ -d ios ]; then swiftlint lint --strict ios; else echo "pas de dossier ios/"; fi
       - name: Build iOS
+        if: hashFiles('gradlew') != ''  # template sans app : rien à compiler
         run: ./scripts/build-ios.sh
